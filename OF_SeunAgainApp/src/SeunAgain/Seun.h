@@ -20,21 +20,33 @@ public:
   void draw();
   void keyPressed(int key);
   
-  // paritcles
+  // Paritcles
   vector<ParticleSystem> pSystems;
-  // fbos
+  
+  // FBOs
   ofFbo fboCenter, fboLeft, fboRight;
+  ofxSyphonServer texSyphonCenter, texSyphonLeft, texSyphonRight;
   void setupFBOs();
-  // modes
-  int displayMode = 0;
+  void updateFBOs();
+  
+  // Modes
   /**
+   * displayMode
    * 0: normal
    * 1: zoom in/out
    * 2: testMode
    **/
+  
+  
+  
+  // GUIs
+  ofParameterGroup mainParameters;
+  ofParameter<int> guiDisplayMode;
+  ofParameter<float> guiScale;
+  ofParameter<bool> guiSyphonToggle;
+  ofxPanel mainGui;
+  void setupGUI();
+  void updateGUI();
   void updateMode();
-  
-  
-  
   
 };
