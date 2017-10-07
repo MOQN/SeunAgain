@@ -29,13 +29,11 @@ public:
   void setupFBOs();
   void updateFBOs();
   
-  // Modes
-  /**
-   * displayMode
-   * 0: normal
-   * 1: zoom in/out
-   * 2: testMode
-   **/
+  // Sound
+  vector<ofSoundPlayer> sounds;
+  void setupSounds();
+  void updateSounds();
+  
   
   
   
@@ -49,4 +47,11 @@ public:
   void updateGUI();
   void updateMode();
   
+  // Modes
+  /**
+   * displayMode
+   * 0: normal
+   * 1: zoom in/out
+   * 2: testMode
+   **/
 };

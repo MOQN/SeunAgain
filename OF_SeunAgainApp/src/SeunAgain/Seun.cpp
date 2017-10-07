@@ -16,6 +16,7 @@ void Seun::init() {
   
   setupSinCos();
   setupFBOs();
+  setupSounds();
   setupGUI();
   
   texSyphonCenter.setName("SeunCENTER");
@@ -31,6 +32,7 @@ void Seun::update() {
   updateGUI();
   updateMode();
   updateFBOs();
+  updateSounds();
   
 }
 
@@ -39,7 +41,7 @@ void Seun::draw() {
   
   switch (guiDisplayMode) {
       
-    case 0:
+    case 0 ... 1:
       ofPushStyle();
       // background
       ofSetColor(20);
@@ -48,7 +50,14 @@ void Seun::draw() {
       // draw fbos
       ofPushMatrix();
       ofTranslate(ofGetWidth()/2 - GUI_WIDTH/2, ofGetHeight()/2);
-      ofScale(guiScale, guiScale);
+      
+      if (guiDisplayMode == 0) {
+        // fixed
+        ofScale(0.3, 0.3);
+      } else {
+        // can be changed with the gui
+        ofScale(guiScale, guiScale);
+      }
       
       ofSetColor(255);
       ofDrawRectangle(0, 0, 100, 100);
@@ -72,10 +81,6 @@ void Seun::draw() {
       //cout << fboCenter.getWidth() << endl;
       
       ofPopStyle();
-      break;
-      
-    case 1:
-      //
       break;
       
     case 2:
@@ -103,10 +108,22 @@ void Seun::keyPressed( int key ) {
   switch (key) {
     case '0' ... '2':
       guiDisplayMode = key - '0';
-      log << "Display Mode Changed";
+      log << "DisplayMode Changed";
+      break;
+    case 'a':
+      sounds[0].play();
+      sounds[0].setSpeed( ofRandom(0.5, 1.5) );
+      sounds[0].setPan( ofRandom(-1, 1) );
+      log << "Sound Triggered";
+      break;
+    case 's':
+      sounds[1].play();
+      sounds[1].setSpeed( ofRandom(0.5, 1.5) );
+      sounds[1].setPan( ofRandom(-1, 1) );
+      log << "Sound Triggered";
       break;
     default:
-      log << "Okay..";
+      log << "Okay...";
       break;
   }
   
@@ -154,16 +171,41 @@ void Seun::updateFBOs() {
   fboRight.end();
 }
 
-void Seun::updateMode() {
-  //
+
+void Seun::setupSounds() {
+  ofDirectory dir;
+  string filepath, filename;
+  
+  // open the directory
+  dir.open( "sounds" );
+  dir.allowExt("wav");
+  dir.listDir();
+  
+  for (int i=0; i<dir.size(); i++) {
+    filepath = dir.getPath(i);
+    filename = dir.getName(i);
+    
+    sounds.push_back( ofSoundPlayer() );
+    sounds[i].load(filepath);
+    sounds[i].setVolume(0.75f);
+    sounds[i].setMultiPlay(true);
+    cout << "SOUND LOADED: " << filename << endl;
+  }
+  cout << endl;
 }
+
+void Seun::updateSounds() {
+  ofSoundUpdate();
+}
+
+
 
 
 void Seun::setupGUI() {
   mainParameters.setName("Setting");
-  mainParameters.add( guiDisplayMode.set("DisplayMode", 0, 0, 2) );
+  mainParameters.add( guiDisplayMode.set("DisplayMode", 2, 0, 2) );
   mainParameters.add( guiScale.set("Scale", 0.3, 0.1, 1.0) );
-  mainParameters.add( guiSyphonToggle.set("Syphon") );
+  mainParameters.add( guiSyphonToggle.set("SyphonToggle", false) );
   
   mainGui.setup(mainParameters);
   mainGui.setPosition(ofGetWidth() - GUI_WIDTH, 0);
@@ -173,7 +215,9 @@ void Seun::updateGUI() {
   //mScale = ofLerp(mScale, guiScale, 0.005);
 }
 
-
+void Seun::updateMode() {
+  //
+}
 
 
 
