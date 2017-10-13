@@ -16,6 +16,7 @@ class Firework {
 public:
   ofPoint pos;
   ofColor color;
+  ofImage img;
   
   float gravity;
   

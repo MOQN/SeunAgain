@@ -15,13 +15,36 @@ Firework::Firework() {
   //pos = ofPoint( ofGetWidth()/2, ofGetHeight() );
   pos = ofPoint( 0,0 );
   
-  numOfParticles = int( ofRandom(100,200) );
+  img.load("images/test.png");
+  ofPixels pixels = img.getPixels();
   
-  for (int i=0; i<numOfParticles; i++) {
-    particles.push_back( Particle()
-                        .position( ofPoint(ofRandom(ofGetWidth()), ofRandom(ofGetHeight())))
-                        );
+  
+  int resolution = 3;
+  for (int y=0; y<img.getHeight(); y += resolution) {
+    for (int x=0; x<img.getWidth(); x += resolution) {
+      int index = (img.getWidth()*y + x) * 4;
+      
+      float r = pixels[index+0];
+      float g = pixels[index+1];
+      float b = pixels[index+2];
+      
+      if (r+g+b < 245*3 && ofRandom(1.0) < 0.3) {
+        //if this is not white color and 30% chance
+        particles.push_back( Particle()
+                            .position( ofPoint(x,y) )
+                            );
+      }
+    }
   }
+  
+//  numOfParticles = int( ofRandom(100,200) );
+//
+//  for (int i=0; i<numOfParticles; i++) {
+//    particles.push_back( Particle()
+//                        .position( ofPoint(0,0) )
+//                        //.velocity( ofPoint( 0, -9) )
+//                        );
+//  }
 }
 
 
