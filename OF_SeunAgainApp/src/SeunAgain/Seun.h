@@ -8,7 +8,7 @@
 #pragma once
 
 #include "Prefix.h"
-#include "ParticleSystem.h"
+#include "Firework.h"
 
 
 
@@ -21,13 +21,16 @@ public:
   void keyPressed(int key);
   
   // Paritcles
-  vector<ParticleSystem> pSystems;
+  vector<Firework> fireworks;
   
   // FBOs
   ofFbo fboCenter, fboLeft, fboRight;
   ofxSyphonServer texSyphonCenter, texSyphonLeft, texSyphonRight;
   void setupFBOs();
   void updateFBOs();
+  
+  // Save PNGs
+  void renderFBOs();
   
   // Sound
   vector<ofSoundPlayer> sounds;
@@ -45,13 +48,5 @@ public:
   ofxPanel mainGui;
   void setupGUI();
   void updateGUI();
-  void updateMode();
   
-  // Modes
-  /**
-   * displayMode
-   * 0: normal
-   * 1: zoom in/out
-   * 2: testMode
-   **/
 };

@@ -19,7 +19,9 @@ public:
   Particle& angle( float a );
   
   ofPoint pos, vel, acc;
-  float mass, rad, theta;
+  float mass, rad, radOriginal, theta;
+  float scaleLife, scaleSine, scaleSineFreq;
+  bool isLarge;
   ofColor color;
   float h, s, b, a;
   float lifeSpan, lifeReduction;
@@ -28,5 +30,5 @@ public:
   void update();
   void display();
   void applyForce( ofPoint force );
-  void checkLifespan();
+  void updateLifespan();
 };

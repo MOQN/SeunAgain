@@ -19,7 +19,7 @@ void ofApp::draw(){
     int port = 3000;
     string dest = "http://localhost:" + ofToString(port) + "/get";
     
-//    string dest = "https://js6450.github.io/data.json";
+//    string dest = "https://js6450.github.io/asset/data.json";
     ofHttpResponse resp = ofLoadURL(dest);
     
     incoming = resp.data;

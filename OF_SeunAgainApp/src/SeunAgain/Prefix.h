@@ -12,7 +12,10 @@
 #include "ofxSyphon.h"
 
 
+
 // Macros
+#define RENDER_FBO_UNTIL 0
+
 #define WINDOW_WIDTH 1400
 #define WINDOW_HEIGHT 900
 

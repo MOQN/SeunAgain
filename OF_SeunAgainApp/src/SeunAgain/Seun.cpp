@@ -23,14 +23,13 @@ void Seun::init() {
   texSyphonLeft.setName("SeunLEFT");
   texSyphonRight.setName("SeunRIGHT");
   
-  pSystems.push_back( ParticleSystem() );
+  fireworks.push_back( Firework() );
 }
 
 
 void Seun::update() {
   
   updateGUI();
-  updateMode();
   updateFBOs();
   updateSounds();
   
@@ -84,7 +83,7 @@ void Seun::draw() {
       break;
       
     case 2:
-      for (auto &f : pSystems) {
+      for (auto &f : fireworks) {
         f.update();
         f.display();
       }
@@ -92,6 +91,10 @@ void Seun::draw() {
   }
   
   mainGui.draw();
+  
+  if (RENDER_FBO_UNTIL) {
+    renderFBOs();
+  }
   
   if (guiSyphonToggle) {
     texSyphonCenter.publishTexture( &fboCenter.getTexture() );
@@ -199,6 +202,32 @@ void Seun::updateSounds() {
 }
 
 
+void Seun::renderFBOs() {
+  //   to save image
+  static int fileIndex = 1000;
+  ofPixels tempPixels;
+  string filename;
+  // center
+  fboCenter.readToPixels(tempPixels);
+  filename = "_Render/SeunCenter/seun_c_" + ofToString(fileIndex) + ".png";
+  ofSaveImage(tempPixels, filename);
+  // left
+  fboLeft.readToPixels(tempPixels);
+  filename = "_Render/SeunLeft/seun_l_" + ofToString(fileIndex) + ".png";
+  ofSaveImage(tempPixels, filename);
+  // right
+  fboRight.readToPixels(tempPixels);
+  filename = "_Render/SeunRight/seun_r_" + ofToString(fileIndex) + ".png";
+  ofSaveImage(tempPixels, filename);
+  
+  fileIndex++;
+  ofDrawBitmapString(fileIndex-999, 10, 40);
+  
+  if (fileIndex == RENDER_FBO_UNTIL + 1000 ) {
+    cout << "renderFBOs: Done" << endl;
+    ofExit();
+  }
+}
 
 
 void Seun::setupGUI() {
@@ -213,10 +242,6 @@ void Seun::setupGUI() {
 
 void Seun::updateGUI() {
   //mScale = ofLerp(mScale, guiScale, 0.005);
-}
-
-void Seun::updateMode() {
-  //
 }
 
 
