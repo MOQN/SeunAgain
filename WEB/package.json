@@ -1,5 +1,6 @@
 {
-  "name": "SeunAgain",
+  "name": "seun-again",
+  "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
     "body-parser": "^1.18.2",
@@ -12,4 +13,16 @@
   "scripts": {
     "start": "node index"
   },
+  "description": "A simple collaborative whiteboard for socket.io",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MOQN/SeunAgain.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MOQN/SeunAgain/issues"
+  },
+  "homepage": "https://github.com/MOQN/SeunAgain#readme"
 }
