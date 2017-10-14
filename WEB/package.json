@@ -1,7 +1,12 @@
 {
+<<<<<<< HEAD
   "name": "nodetest",
   "version": "1.0.0",
   "description": "A simple collaborative whiteboard for socket.io",
+=======
+  "name": "seun-again",
+  "version": "1.0.0",
+>>>>>>> origin/master
   "main": "index.js",
   "dependencies": {
     "body-parser": "^1.18.2",
@@ -15,6 +20,21 @@
   "scripts": {
     "start": "node index"
   },
+<<<<<<< HEAD
   "author": "",
   "license": "ISC"
+=======
+  "description": "A simple collaborative whiteboard for socket.io",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MOQN/SeunAgain.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MOQN/SeunAgain/issues"
+  },
+  "homepage": "https://github.com/MOQN/SeunAgain#readme"
+>>>>>>> origin/master
 }
