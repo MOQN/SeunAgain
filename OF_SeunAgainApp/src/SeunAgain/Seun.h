@@ -8,7 +8,7 @@
 #pragma once
 
 #include "Prefix.h"
-#include "Firework.h"
+#include "ParticleSystem.h"
 
 
 
@@ -21,7 +21,7 @@ public:
   void keyPressed(int key);
   
   // Paritcles
-  vector<Firework> fireworks;
+  vector<ParticleSystem> ParticleSystems;
   
   // FBOs
   ofFbo fboCenter, fboLeft, fboRight;

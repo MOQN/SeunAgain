@@ -31,4 +31,7 @@ public:
   void display();
   void applyForce( ofPoint force );
   void updateLifespan();
+  void checkLifespan();
+  void checkCollision( Particle* other );
+  void checkBoundaries( float width, float height );
 };

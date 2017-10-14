@@ -23,7 +23,7 @@ void Seun::init() {
   texSyphonLeft.setName("SeunLEFT");
   texSyphonRight.setName("SeunRIGHT");
   
-  fireworks.push_back( Firework() );
+  ParticleSystems.push_back( ParticleSystem() );
 }
 
 
@@ -83,7 +83,7 @@ void Seun::draw() {
       break;
       
     case 2:
-      for (auto &f : fireworks) {
+      for (auto &f : ParticleSystems) {
         f.update();
         f.display();
       }

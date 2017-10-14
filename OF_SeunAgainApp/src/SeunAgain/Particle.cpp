@@ -59,7 +59,7 @@ void Particle::update() {
   scaleSine = 1.0 + mSin(ofGetFrameNum() * scaleSineFreq) * 0.15;
   rad = radOriginal * scaleLife * scaleSine;
   // angle
-
+  
   // color
   color.setHsb(h, s, b, a);
   // life
@@ -73,7 +73,6 @@ void Particle::display() {
   ofPushMatrix();
   ofTranslate( pos );
   ofRotate( theta );
-  
   
   if (isLarge) {
     // outer circle
@@ -121,6 +120,41 @@ void Particle::updateLifespan() {
   }
 }
 
+void Particle::checkLifespan() {
+  
+}
+
+
+void Particle::checkCollision( Particle* other ) {
+  float distance = pos.distance( other->pos );
+  
+  if (distance < rad +  other->rad ) {
+    // collided!
+    
+    // this to other
+    ofPoint force = other->pos - this->pos;
+    force.normalize();
+    force *= other->vel.length() * 0.8;
+    other->applyForce( force );
+    // other to this
+    force *= -1;
+    force.normalize();
+    force *= this->vel.length() * 0.8;
+    this->applyForce( force );
+  }
+}
+
+
+void Particle::checkBoundaries( float width, float height ) {
+  if (pos.x < 0 || pos.x > width) {
+    vel.x *= -1;
+  }
+  if (pos.y < 0 || pos.y > height) {
+    vel.y *= -1;
+  }
+  pos.x = ofClamp(pos.x, 0, width);
+  pos.y = ofClamp(pos.y, 0, height);
+}
 
 
 
@@ -132,5 +166,4 @@ void Particle::updateLifespan() {
 
 
 
-
-
+//

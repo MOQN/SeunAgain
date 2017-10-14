@@ -10,7 +10,7 @@
 		0B8074F61F879969006AB420 /* Seun.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0B8074F41F879969006AB420 /* Seun.cpp */; };
 		0B8074FB1F87A2D5006AB420 /* Prefix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0B8074F91F87A2D5006AB420 /* Prefix.cpp */; };
 		0B8074FF1F87A481006AB420 /* Particle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0B8074FD1F87A481006AB420 /* Particle.cpp */; };
-		0BD54A661F87F80500E918FF /* Firework.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0BD54A641F87F80500E918FF /* Firework.cpp */; };
+		0BD54A661F87F80500E918FF /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0BD54A641F87F80500E918FF /* ParticleSystem.cpp */; };
 		11DF9AB1B4EAA63E3B190CA0 /* ofxSyphonServerDirectory.mm in Sources */ = {isa = PBXBuildFile; fileRef = E723BEF4C55D236E24639608 /* ofxSyphonServerDirectory.mm */; };
 		125506CD3E5F428AAFE5CC65 /* ofxTCPManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F399B91E98DC31CDA6DDACB4 /* ofxTCPManager.cpp */; };
 		1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 907C5B5E104864A2D3A25745 /* ofxToggle.cpp */; };
@@ -79,8 +79,8 @@
 		0B8074FA1F87A2D5006AB420 /* Prefix.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prefix.h; sourceTree = "<group>"; };
 		0B8074FD1F87A481006AB420 /* Particle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Particle.cpp; sourceTree = "<group>"; };
 		0B8074FE1F87A481006AB420 /* Particle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Particle.h; sourceTree = "<group>"; };
-		0BD54A641F87F80500E918FF /* Firework.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Firework.cpp; sourceTree = "<group>"; };
-		0BD54A651F87F80500E918FF /* Firework.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Firework.h; sourceTree = "<group>"; };
+		0BD54A641F87F80500E918FF /* ParticleSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleSystem.cpp; sourceTree = "<group>"; };
+		0BD54A651F87F80500E918FF /* ParticleSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParticleSystem.h; sourceTree = "<group>"; };
 		0FB83AC7747296DD35C1C295 /* ofxSyphon.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxSyphon.h; path = ../../../addons/ofxSyphon/src/ofxSyphon.h; sourceTree = SOURCE_ROOT; };
 		15F2C6477A769C03A56D1401 /* ofxSlider.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxSlider.cpp; path = ../../../addons/ofxGui/src/ofxSlider.cpp; sourceTree = SOURCE_ROOT; };
 		17E65988300FBD9AAA2CD0CA /* ofxGui.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxGui.h; path = ../../../addons/ofxGui/src/ofxGui.h; sourceTree = SOURCE_ROOT; };
@@ -152,8 +152,8 @@
 				0B8074F41F879969006AB420 /* Seun.cpp */,
 				0B8074FE1F87A481006AB420 /* Particle.h */,
 				0B8074FD1F87A481006AB420 /* Particle.cpp */,
-				0BD54A651F87F80500E918FF /* Firework.h */,
-				0BD54A641F87F80500E918FF /* Firework.cpp */,
+				0BD54A651F87F80500E918FF /* ParticleSystem.h */,
+				0BD54A641F87F80500E918FF /* ParticleSystem.cpp */,
 			);
 			name = SeunAgain;
 			path = src/SeunAgain;
@@ -462,7 +462,7 @@
 				856AA354D08AB4B323081444 /* ofxBaseGui.cpp in Sources */,
 				5CBB2AB3A60F65431D7B555D /* ofxButton.cpp in Sources */,
 				B266578FC55D23BFEBC042E7 /* ofxGuiGroup.cpp in Sources */,
-				0BD54A661F87F80500E918FF /* Firework.cpp in Sources */,
+				0BD54A661F87F80500E918FF /* ParticleSystem.cpp in Sources */,
 				0B8074FF1F87A481006AB420 /* Particle.cpp in Sources */,
 				483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */,
 				F285EB3169F1566CA3D93C20 /* ofxPanel.cpp in Sources */,
