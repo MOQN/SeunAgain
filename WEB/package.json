@@ -1,12 +1,6 @@
 {
-  "name": "whiteboard",
-  "version": "1.0.0",
-  "description": "A simple collaborative whiteboard using socket.io",
+  "name": "SeunAgain",
   "main": "index.js",
-  "keywords": [
-    "socket.io",
-    "whiteboard"
-  ],
   "dependencies": {
     "body-parser": "^1.18.2",
     "ejs": "^2.5.7",
@@ -18,6 +12,4 @@
   "scripts": {
     "start": "node index"
   },
-  "author": "Damien Arrachequesne",
-  "license": "MIT"
 }
