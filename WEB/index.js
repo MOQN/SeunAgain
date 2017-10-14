@@ -35,6 +35,10 @@ app.get("/", function(req, res){
     res.render('index');
 });
 
+app.get("/control_interface", function(req, res){
+    res.render('control') ;
+});
+
 
 app.get('/get', function(req, res){
     fs.readFile(dest, 'utf8', function (err, data) {
@@ -55,7 +59,7 @@ app.post('/addUser', function(req, res){
     var jsonData;
 
     fs.readFile(dest, 'utf8', function (err, data) {
-        data = JSON.parse( data );
+        data = JSON.parse(data);
         data[sid] = content;
         //console.log( data );
         //res.end( JSON.stringify(data));
@@ -72,12 +76,51 @@ app.post('/addUser', function(req, res){
 
 });
 
+app.delete('/deleteUser', function(req, res){
+    console.log('in delete');
+    console.log(req.body);
+
+    var sid = req.body['id'];
+    //console.log(sid);
+    //console.log('saving to: ' + dest);
+
+    var jsonData;
+
+    fs.readFile(dest, 'utf8', function (err, data) {
+        data = JSON.parse(data);
+
+        console.log(data.size);
+
+        if(data[sid] != null){
+            delete data[sid];
+        }
+
+        jsonData = JSON.stringify(data);
+        //console.log(jsonData);
+        fs.writeFile(dest, jsonData, 'utf8', function(err){
+            if(err){
+                return console.log(err);
+            }
+            console.log("file saved!");
+        });
+        res.end(jsonData);
+    });
+
+});
+
+var resetState = false;
+var buttonState = 0;
+
 io.on('connection', function (socket) {
     var sid = socket.id;
     console.log('a user connected with: ' + sid);
-    socket.on('drawing', function (data) {
+
+    socket.emit('setState', buttonState);
+
+    socket.on('drawing', function(data){
         rp({
             method: 'POST',
+            //need to change url!!!
             url: 'http://localhost:3000/addUser',
             body: {id: sid, content: data},
             json: true
@@ -88,5 +131,25 @@ io.on('connection', function (socket) {
             //console.log(err);
             console.log("error!");
         });
+    });
+
+    socket.on('changeState', function(data){
+        //console.log(data);
+        buttonState = data.state;
+        socket.broadcast.emit('changeState', data);
+    });
+
+    socket.on('disconnect', function(){
+       console.log("user " + sid + " disconnected");
+       rp({
+           method: 'DELETE',
+           url: 'http://localhost:3000/deleteUser',
+           body: {id: sid},
+           json: true
+       }).then(function(res){
+           console.log("removed user!");
+       }).catch(function(err){
+           console.log("could not remove user!");
+       });
     });
 });
