@@ -41,6 +41,9 @@ public:
   ofImage imgBgCenter;
   ofImage imgBgLR;
   
+  // Firework Data
+  vector<FireworkData> fireworks;
+  void setupFireworks();
   
   
   // GUIs

@@ -17,6 +17,7 @@ void Seun::init() {
   setupSinCos();
   setupFBOs();
   setupSounds();
+  setupFireworks();
   setupGUI();
   
   texSyphonCenter.setName("SeunCENTER");
@@ -27,12 +28,19 @@ void Seun::init() {
   imgBgLR.load("images/bg_LR.jpg");
   
   // CENTER
+  pSystems.push_back( ParticleSystem( PS_MODE_FIREWORK )
+                     .addFireworkData( fireworks[0] )
+                     .position( ofPoint(SCREEN_CENTER_WIDTH/2, SCREEN_CENTER_HEIGHT) )
+                     .init()
+                     );
+  /*
   pSystems.push_back( ParticleSystem( PS_MODE_NORMAL )
                      .position( ofPoint(SCREEN_CENTER_WIDTH/2, SCREEN_CENTER_HEIGHT/2) )
                      .setBoundary( ofPoint(SCREEN_CENTER_WIDTH,
                                            SCREEN_CENTER_HEIGHT) )
                      .init()
                      );
+   */
   // LEFT
   pSystems.push_back( ParticleSystem( PS_MODE_NORMAL )
                      .position( ofPoint(SCREEN_LR_WIDTH/2, SCREEN_LR_HEIGHT/2) )
@@ -196,7 +204,7 @@ void Seun::updateFBOs() {
   else ofSetColor(255,0,0);
   ofDrawRectangle(0, 0, fboCenter.getWidth(), fboCenter.getHeight());
   
-  ofSetColor(255,100);
+  ofSetColor(255,50);
   imgBgCenter.draw(0,0);
   
   pSystems[0].display();
@@ -212,7 +220,7 @@ void Seun::updateFBOs() {
   else ofSetColor(0,255,0);
   ofDrawRectangle(0, 0, fboLeft.getWidth(), fboLeft.getHeight());
   
-  ofSetColor(255,100);
+  ofSetColor(255,50);
   imgBgLR.draw(0,0);
   
   pSystems[1].display();
@@ -228,12 +236,40 @@ void Seun::updateFBOs() {
   else ofSetColor(0,0,255);
   ofDrawRectangle(0, 0, fboRight.getWidth(), fboRight.getHeight());
   
-  ofSetColor(255,100);
+  ofSetColor(255,50);
   imgBgLR.draw(0,0);
   
   pSystems[2].display();
   
   fboRight.end();
+}
+
+
+void Seun::renderFBOs() {
+  //   to save image
+  static int fileIndex = 1000;
+  ofPixels tempPixels;
+  string filename;
+  // center
+  fboCenter.readToPixels(tempPixels);
+  filename = "_Render/SeunCenter/seun_c_" + ofToString(fileIndex) + ".png";
+  ofSaveImage(tempPixels, filename);
+  // left
+  fboLeft.readToPixels(tempPixels);
+  filename = "_Render/SeunLeft/seun_l_" + ofToString(fileIndex) + ".png";
+  ofSaveImage(tempPixels, filename);
+  // right
+  fboRight.readToPixels(tempPixels);
+  filename = "_Render/SeunRight/seun_r_" + ofToString(fileIndex) + ".png";
+  ofSaveImage(tempPixels, filename);
+  
+  fileIndex++;
+  ofDrawBitmapString(fileIndex-999, 10, 40);
+  
+  if (fileIndex == RENDER_FBO_UNTIL + 1000 ) {
+    cout << "renderFBOs: Done" << endl;
+    ofExit();
+  }
 }
 
 
@@ -264,31 +300,25 @@ void Seun::updateSounds() {
 }
 
 
-void Seun::renderFBOs() {
-  //   to save image
-  static int fileIndex = 1000;
-  ofPixels tempPixels;
-  string filename;
-  // center
-  fboCenter.readToPixels(tempPixels);
-  filename = "_Render/SeunCenter/seun_c_" + ofToString(fileIndex) + ".png";
-  ofSaveImage(tempPixels, filename);
-  // left
-  fboLeft.readToPixels(tempPixels);
-  filename = "_Render/SeunLeft/seun_l_" + ofToString(fileIndex) + ".png";
-  ofSaveImage(tempPixels, filename);
-  // right
-  fboRight.readToPixels(tempPixels);
-  filename = "_Render/SeunRight/seun_r_" + ofToString(fileIndex) + ".png";
-  ofSaveImage(tempPixels, filename);
+void Seun::setupFireworks() {
+  ofDirectory dir;
+  string filepath, filename;
   
-  fileIndex++;
-  ofDrawBitmapString(fileIndex-999, 10, 40);
+  // open the directory
+  dir.open( "fireworks" );
+  dir.allowExt("png");
+  dir.listDir();
   
-  if (fileIndex == RENDER_FBO_UNTIL + 1000 ) {
-    cout << "renderFBOs: Done" << endl;
-    ofExit();
+  for (int i=0; i<dir.size(); i++) {
+    filepath = dir.getPath(i);
+    filename = dir.getName(i);
+    ofImage image;
+    image.load( filepath );
+    fireworks.push_back( FireworkData( &image ) );
+
+    cout << "FIREWORK IMAGE LOADED: " << filename << endl;
   }
+  cout << endl;
 }
 
 

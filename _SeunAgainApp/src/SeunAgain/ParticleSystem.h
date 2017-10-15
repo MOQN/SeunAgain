@@ -11,6 +11,39 @@
 #include "Particle.h"
 
 
+class FireworkData {
+public:
+  int number = 0;
+  vector<ofPoint> pos;
+  vector<ofColor> colors;
+  
+  FireworkData() {}
+  FireworkData( ofImage* image ) {
+    ofPixels pixels = image->getPixels();
+    
+    int resolution = 3;
+    int w = image->getWidth();
+    int h = image->getHeight();
+    
+    for (int y = 0; y < h; y += resolution) {
+      for (int x=0; x < w; x += resolution) {
+        int index = (w*y + x) * 4;
+        
+        float r = pixels[index+0];
+        float g = pixels[index+1];
+        float b = pixels[index+2];
+        
+        if (r+g+b < 245*3 && ofRandom(1.0) < 0.3) {
+          //if this is not white color and 30% chance
+          pos.push_back( ofPoint(x - w/2 ,y - h/2) );
+          colors.push_back( ofColor(r,g,b) );
+          number++;
+        }
+      }
+    }
+  }
+};
+
 
 class ParticleSystem {
 public:
@@ -19,7 +52,8 @@ public:
   
   ofPoint pos;
   ofColor color;
-  ofImage img;
+  
+  
   
   float gravity;
   
@@ -29,7 +63,7 @@ public:
   ParticleSystem( PSystemMode mode );
   ParticleSystem& position( ofPoint p );
   ParticleSystem& setBoundary( ofPoint b );
-  ParticleSystem& applyImage( ofImage i );
+  ParticleSystem& addFireworkData( FireworkData f );
   ParticleSystem& init();
   
   void update();
@@ -52,7 +86,12 @@ public:
   void nextStage();
   
   void applyGravity();
-  void explode();
+  
   void slowDown( float amount );
+  
+  // Firework
+  FireworkData firework;
+  ofPoint posExplosion;
+  void explode();
   
 };
