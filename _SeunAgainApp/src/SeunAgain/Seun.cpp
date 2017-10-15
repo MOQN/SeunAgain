@@ -23,10 +23,28 @@ void Seun::init() {
   texSyphonLeft.setName("SeunLEFT");
   texSyphonRight.setName("SeunRIGHT");
   
+  imgBgCenter.load("images/bg_Center.jpg");
+  imgBgLR.load("images/bg_LR.jpg");
+  
+  // CENTER
   pSystems.push_back( ParticleSystem( PS_MODE_NORMAL )
                      .position( ofPoint(SCREEN_CENTER_WIDTH/2, SCREEN_CENTER_HEIGHT/2) )
                      .setBoundary( ofPoint(SCREEN_CENTER_WIDTH,
                                            SCREEN_CENTER_HEIGHT) )
+                     .init()
+                     );
+  // LEFT
+  pSystems.push_back( ParticleSystem( PS_MODE_NORMAL )
+                     .position( ofPoint(SCREEN_LR_WIDTH/2, SCREEN_LR_HEIGHT/2) )
+                     .setBoundary( ofPoint(SCREEN_LR_WIDTH,
+                                           SCREEN_LR_HEIGHT) )
+                     .init()
+                     );
+  // RIGHT
+  pSystems.push_back( ParticleSystem( PS_MODE_NORMAL )
+                     .position( ofPoint(SCREEN_LR_WIDTH/2, SCREEN_LR_HEIGHT/2) )
+                     .setBoundary( ofPoint(SCREEN_LR_WIDTH,
+                                           SCREEN_LR_HEIGHT) )
                      .init()
                      );
 }
@@ -49,11 +67,11 @@ void Seun::draw() {
       ofPushStyle();
       // background
       ofSetColor(20);
-      ofDrawRectangle(0, 0, ofGetWidth() - GUI_WIDTH, ofGetHeight());
+      ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
       
       // draw fbos
       ofPushMatrix();
-      ofTranslate(ofGetWidth()/2 - GUI_WIDTH/2, ofGetHeight()/2);
+      ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
       ofSetColor(255);
       if (guiDisplayMode == 0) {
         // fixed
@@ -87,10 +105,6 @@ void Seun::draw() {
       break;
   }
   
-  
-  ofSetColor( 255 );
-  ofDrawBitmapString(pSystems[0].particles.size(), 10, 20);
-  
   mainGui.draw();
   
   if (RENDER_FBO_UNTIL) {
@@ -102,6 +116,15 @@ void Seun::draw() {
     texSyphonLeft.publishTexture( &fboLeft.getTexture() );
     texSyphonRight.publishTexture( &fboRight.getTexture() );
   }
+  
+  // info
+  ofSetColor( 255 );
+  stringstream info;
+  info << "fps: " << int(ofGetFrameRate()) << endl << endl;;
+  for (int i=0; i<pSystems.size(); i++) {
+    info << i <<  ": " << pSystems[i].particles.size() << endl;
+  }
+  ofDrawBitmapString( info.str() , 10, 20);
 }
 
 
@@ -173,9 +196,10 @@ void Seun::updateFBOs() {
   else ofSetColor(255,0,0);
   ofDrawRectangle(0, 0, fboCenter.getWidth(), fboCenter.getHeight());
   
-  for (auto &ps : pSystems) {
-    ps.display();
-  }
+  ofSetColor(255,100);
+  imgBgCenter.draw(0,0);
+  
+  pSystems[0].display();
   
   fboCenter.end();
   
@@ -186,11 +210,13 @@ void Seun::updateFBOs() {
   
   if (guiDisplayMode != 2) ofSetColor(0);
   else ofSetColor(0,255,0);
-  ofDrawRectangle(0, 0, fboCenter.getWidth(), fboCenter.getHeight());
+  ofDrawRectangle(0, 0, fboLeft.getWidth(), fboLeft.getHeight());
   
-  for (auto &ps : pSystems) {
-    ps.display();
-  }
+  ofSetColor(255,100);
+  imgBgLR.draw(0,0);
+  
+  pSystems[1].display();
+  
   fboLeft.end();
   
   // RIGHT
@@ -200,11 +226,13 @@ void Seun::updateFBOs() {
   
   if (guiDisplayMode != 2) ofSetColor(0);
   else ofSetColor(0,0,255);
-  ofDrawRectangle(0, 0, fboCenter.getWidth(), fboCenter.getHeight());
+  ofDrawRectangle(0, 0, fboRight.getWidth(), fboRight.getHeight());
   
-  for (auto &ps : pSystems) {
-    ps.display();
-  }
+  ofSetColor(255,100);
+  imgBgLR.draw(0,0);
+  
+  pSystems[2].display();
+  
   fboRight.end();
 }
 
@@ -267,7 +295,7 @@ void Seun::renderFBOs() {
 void Seun::setupGUI() {
   mainParameters.setName("Setting");
   mainParameters.add( guiDisplayMode.set("DisplayMode", 1, 0, 2) );
-  mainParameters.add( guiScale.set("Scale", 0.48, 0.1, 1.0) );
+  mainParameters.add( guiScale.set("Scale", 0.48, 0.3, 1.0) );
   mainParameters.add( guiSyphonToggle.set("SyphonToggle", false) );
   
   mainGui.setup(mainParameters);

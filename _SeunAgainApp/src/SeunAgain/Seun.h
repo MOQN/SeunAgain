@@ -37,6 +37,9 @@ public:
   void setupSounds();
   void updateSounds();
   
+  // Image
+  ofImage imgBgCenter;
+  ofImage imgBgLR;
   
   
   
