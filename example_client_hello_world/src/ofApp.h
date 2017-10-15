@@ -35,4 +35,38 @@ class ofApp : public ofBaseApp{
         vector<string> readyStr;
         int numP;
     
+    class Particle{
+    public:
+        string id;
+        ofPoint acc, vel, pos;
+        ofColor col;
+        float mass;
+        
+        Particle(string _id, ofPoint _pos, int hue){
+            id = _id;
+            pos = _pos;
+            //            vel = _vel;
+            acc = ofPoint::zero();
+            col.setHsb(hue, 255, 255);
+            mass = ofRandom(10, 25);
+        }
+        
+        void update(){
+            vel += acc;
+            pos += vel;
+            acc *= 0;
+        }
+        
+        void display(){
+            ofPushStyle();
+            ofSetColor(col);
+            ofDrawSphere(pos, mass);
+            ofPopStyle();
+        }
+        
+    };
+    
+    
+    vector<Particle> particles;
+    
 };
