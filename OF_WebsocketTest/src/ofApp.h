@@ -30,4 +30,45 @@ class ofApp : public ofBaseApp{
         void onIdle( ofxLibwebsockets::Event& args );
         void onMessage( ofxLibwebsockets::Event& args );
         void onBroadcast( ofxLibwebsockets::Event& args );
+    
+        string incoming;
+        vector<string> readyStr;
+        int numP;
+    
+    class Particle{
+    public:
+        string id;
+        ofPoint acc, vel, pos;
+        int hue;
+        ofColor col;
+        float mass;
+        
+        Particle(string _id, ofPoint _pos, int _hue){
+            id = _id;
+            pos = _pos;
+            hue = _hue;
+            //            vel = _vel;
+            acc = ofPoint::zero();
+            col.setHsb(hue, 255, 255);
+            mass = ofRandom(10, 25);
+        }
+        
+        void update(){
+            vel += acc;
+            pos += vel;
+            acc *= 0;
+        }
+        
+        void display(){
+            ofPushStyle();
+            ofSetColor(col);
+            ofDrawSphere(pos, mass);
+            ofPopStyle();
+        }
+        
+    };
+    
+    
+    vector<Particle> particles;
+    
 };

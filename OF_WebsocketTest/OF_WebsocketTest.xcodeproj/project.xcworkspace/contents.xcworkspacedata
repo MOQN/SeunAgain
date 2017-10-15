@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:/Users/MOQN/Dropbox/_OF_v0.9.8_osx/apps/_SeunAgainOF/OF_WebsocketTest/OF_WebsocketTest.xcodeproj">
+      location = "self:/Users/MOQN/Dropbox/_OF_v0.9.8_osx/apps/_SeunAgainOF/example_client_hello_world/OF_WebsocketTest.xcodeproj">
    </FileRef>
 </Workspace>
