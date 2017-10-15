@@ -28,6 +28,9 @@ void ofApp::draw(){
     
     client.send("request data");
     
+    cout<< "frameNum: ";
+    cout<< ofGetFrameNum() <<endl;
+    
     for(Particle p: particles){
         p.display();
     }
@@ -56,15 +59,14 @@ void ofApp::onIdle( ofxLibwebsockets::Event& args ){
 
 //--------------------------------------------------------------
 void ofApp::onMessage( ofxLibwebsockets::Event& args ){
-    cout<< "frameNum: ";
-    cout<< ofGetFrameNum() <<endl;
+
 
     //cout<<"got message "<<args.message<<endl;
     
     incoming = args.message;
     
     if(incoming != "{}"){
-        cout << incoming << endl;
+        //cout << incoming << endl;
         
         incoming = incoming.substr(1, incoming.size() - 3);
         incoming.erase(std::remove(incoming.begin(), incoming.end(), '"'), incoming.end());
@@ -86,13 +88,17 @@ void ofApp::onMessage( ofxLibwebsockets::Event& args ){
         
         numP = readyStr.size() / 4;
         
+        particles.clear();
+        
         for(int i = 0; i < numP; i++){
+            
             string id = readyStr[i * 4];
             float x = ofToFloat(readyStr[i * 4 + 1]) * ofGetWidth();
             //cout << x << endl;
             float y = ofToFloat(readyStr[i * 4 + 2]) * ofGetHeight();
             int hue = ofToInt(readyStr[i * 4 + 3]);
             particles.push_back(Particle(id, ofPoint(x, y), hue));
+
         }
         
     }

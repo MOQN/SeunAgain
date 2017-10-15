@@ -39,12 +39,14 @@ class ofApp : public ofBaseApp{
     public:
         string id;
         ofPoint acc, vel, pos;
+        int hue;
         ofColor col;
         float mass;
         
-        Particle(string _id, ofPoint _pos, int hue){
+        Particle(string _id, ofPoint _pos, int _hue){
             id = _id;
             pos = _pos;
+            hue = _hue;
             //            vel = _vel;
             acc = ofPoint::zero();
             col.setHsb(hue, 255, 255);
