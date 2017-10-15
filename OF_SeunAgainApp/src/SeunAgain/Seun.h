@@ -21,7 +21,7 @@ public:
   void keyPressed(int key);
   
   // Paritcles
-  vector<ParticleSystem> ParticleSystems;
+  vector<ParticleSystem> pSystems;
   
   // FBOs
   ofFbo fboCenter, fboLeft, fboRight;

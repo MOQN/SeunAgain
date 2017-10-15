@@ -23,7 +23,12 @@ void Seun::init() {
   texSyphonLeft.setName("SeunLEFT");
   texSyphonRight.setName("SeunRIGHT");
   
-  ParticleSystems.push_back( ParticleSystem() );
+  pSystems.push_back( ParticleSystem( PS_MODE_NORMAL )
+                     .position( ofPoint(SCREEN_CENTER_WIDTH/2, SCREEN_CENTER_HEIGHT/2) )
+                     .setBoundary( ofPoint(SCREEN_CENTER_WIDTH,
+                                           SCREEN_CENTER_HEIGHT) )
+                     .init()
+                     );
 }
 
 
@@ -40,7 +45,7 @@ void Seun::draw() {
   
   switch (guiDisplayMode) {
       
-    case 0 ... 1:
+    case 0 ... 2:
       ofPushStyle();
       // background
       ofSetColor(20);
@@ -49,17 +54,14 @@ void Seun::draw() {
       // draw fbos
       ofPushMatrix();
       ofTranslate(ofGetWidth()/2 - GUI_WIDTH/2, ofGetHeight()/2);
-      
+      ofSetColor(255);
       if (guiDisplayMode == 0) {
         // fixed
-        ofScale(0.3, 0.3);
+        ofScale(0.48, 0.48);
       } else {
         // can be changed with the gui
         ofScale(guiScale, guiScale);
       }
-      
-      ofSetColor(255);
-      ofDrawRectangle(0, 0, 100, 100);
       
       int x, y, w, h, gap;
       gap = 30;
@@ -77,18 +79,17 @@ void Seun::draw() {
       
       ofPopMatrix();
       
-      //cout << fboCenter.getWidth() << endl;
-      
       ofPopStyle();
       break;
       
-    case 2:
-      for (auto &f : ParticleSystems) {
-        f.update();
-        f.display();
-      }
+    case 3:
+      // test?
       break;
   }
+  
+  
+  ofSetColor( 255 );
+  ofDrawBitmapString(pSystems[0].particles.size(), 10, 20);
   
   mainGui.draw();
   
@@ -155,22 +156,55 @@ void Seun::setupFBOs() {
 
 
 void Seun::updateFBOs() {
+  
+  // update particles
+  for (auto &ps : pSystems) {
+    ps.update();
+  }
+  
+  // draw them into fbos
+  
+  // CENTER
+  
   fboCenter.begin();
-  ofClear(0);
-  ofSetColor(255,0,0);
+  ofClear(0,0,0);
+  
+  if (guiDisplayMode != 2) ofSetColor(0);
+  else ofSetColor(255,0,0);
   ofDrawRectangle(0, 0, fboCenter.getWidth(), fboCenter.getHeight());
+  
+  for (auto &ps : pSystems) {
+    ps.display();
+  }
+  
   fboCenter.end();
+  
+  // LEFT
   
   fboLeft.begin();
   ofClear(0);
-  ofSetColor(0,255,0);
-  ofDrawRectangle(0, 0, fboLeft.getWidth(), fboLeft.getHeight());
+  
+  if (guiDisplayMode != 2) ofSetColor(0);
+  else ofSetColor(0,255,0);
+  ofDrawRectangle(0, 0, fboCenter.getWidth(), fboCenter.getHeight());
+  
+  for (auto &ps : pSystems) {
+    ps.display();
+  }
   fboLeft.end();
+  
+  // RIGHT
   
   fboRight.begin();
   ofClear(0);
-  ofSetColor(0,0,255);
-  ofDrawRectangle(0, 0, fboRight.getWidth(), fboRight.getHeight());
+  
+  if (guiDisplayMode != 2) ofSetColor(0);
+  else ofSetColor(0,0,255);
+  ofDrawRectangle(0, 0, fboCenter.getWidth(), fboCenter.getHeight());
+  
+  for (auto &ps : pSystems) {
+    ps.display();
+  }
   fboRight.end();
 }
 
@@ -232,8 +266,8 @@ void Seun::renderFBOs() {
 
 void Seun::setupGUI() {
   mainParameters.setName("Setting");
-  mainParameters.add( guiDisplayMode.set("DisplayMode", 2, 0, 2) );
-  mainParameters.add( guiScale.set("Scale", 0.3, 0.1, 1.0) );
+  mainParameters.add( guiDisplayMode.set("DisplayMode", 1, 0, 2) );
+  mainParameters.add( guiScale.set("Scale", 0.48, 0.1, 1.0) );
   mainParameters.add( guiSyphonToggle.set("SyphonToggle", false) );
   
   mainGui.setup(mainParameters);

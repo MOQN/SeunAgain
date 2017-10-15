@@ -14,6 +14,9 @@
 
 class ParticleSystem {
 public:
+  PSystemMode mode;
+  ofPoint boundary;
+  
   ofPoint pos;
   ofColor color;
   ofImage img;
@@ -23,12 +26,26 @@ public:
   int numOfParticles;
   vector<Particle> particles;
   
-  ParticleSystem();
+  ParticleSystem( PSystemMode mode );
   ParticleSystem& position( ofPoint p );
-  //ParticleSystem& color( ofPoint c );
+  ParticleSystem& setBoundary( ofPoint b );
+  ParticleSystem& applyImage( ofImage i );
+  ParticleSystem& init();
   
   void update();
   void display();
+  
+  void normal_init();
+  void normal_update();
+  void normal_display();
+  
+  void cell_init();
+  void cell_update();
+  void cell_display();
+  
+  void firework_init();
+  void firework_update();
+  void firework_display();
   
   int stage, count;
   void updateStage();

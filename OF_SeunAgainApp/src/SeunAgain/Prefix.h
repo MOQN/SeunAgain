@@ -19,12 +19,11 @@
 #define WINDOW_WIDTH 1400
 #define WINDOW_HEIGHT 900
 
-#define SCREEN_CENTER_WIDTH 720
-#define SCREEN_CENTER_HEIGHT 1840
-// 0.4 : 1 ratio
-#define SCREEN_LR_WIDTH 1500
+#define SCREEN_CENTER_WIDTH 800
+#define SCREEN_CENTER_HEIGHT 1800
+#define SCREEN_LR_WIDTH 800
 #define SCREEN_LR_HEIGHT 600
-// 3000 x 600 (200px for Blending Edges)
+#define SCREEN_GAP 200
 
 #define GUI_WIDTH 200
 
@@ -32,6 +31,11 @@
 
 
 
+
+enum PSystemMode {
+  PS_MODE_NORMAL,
+  PS_MODE_FIREWORK
+};
 
 extern array<float,SIN_COS_RESOLUTION> sinArray, cosArray;
 

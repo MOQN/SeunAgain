@@ -11,18 +11,18 @@
 Particle::Particle() {
   // life
   lifeSpan = 1.0;
-  scaleLife = 0;
+  scaleLife = 0.0;
   scaleSine = 1.0;
   scaleSineFreq = ofRandom(0.05, 0.08);
   // shape
   //isLarge = int( ofRandom(2) );
   if (isLarge) {
     mass = ofRandom(8, 10);
-    rad = radOriginal = mass * 2.0;
+    rad = radOriginal = mass * 10;
     lifeReduction = 0.001;
   } else {
     mass = ofRandom(1, 3);
-    rad = radOriginal = mass * 1.5;
+    rad = radOriginal = mass * 5;
     lifeReduction = ofRandom(0.0005,0.005);
   }
   // color
@@ -101,19 +101,16 @@ void Particle::applyForce( ofPoint force ) {
 
 
 void Particle::updateLifespan() {
-  lifeSpan = lifeSpan - lifeReduction;
-  if (lifeSpan <= 0.0) {
-    isDone = true;
-    lifeSpan = 0.0;
-  }
-  float justBorn = 0.97;
+
   float dying = 0.1;
-  if (lifeSpan >= justBorn) {
-    // just born
-    scaleLife = ofMap(lifeSpan, 1.0, justBorn, 0.0, 1.0);
-  } else if (lifeSpan >= dying) {
-    // live
-    scaleLife = 1.0;
+  if (lifeSpan >= dying) {
+    // born & live
+    
+    if (scaleLife > 0.99) {
+      scaleLife = 1.0;
+    } else {
+      scaleLife = ofLerp( scaleLife, 1.0, ofRandom(0.001, 0.01) );
+    }
   } else {
     // dying
     scaleLife = ofMap(lifeSpan, dying, 0.0, 1.0, 0.0);
@@ -121,7 +118,11 @@ void Particle::updateLifespan() {
 }
 
 void Particle::checkLifespan() {
-  
+  lifeSpan = lifeSpan - lifeReduction;
+  if (lifeSpan <= 0.0) {
+    isDone = true;
+    lifeSpan = 0.0;
+  }
 }
 
 
@@ -146,14 +147,14 @@ void Particle::checkCollision( Particle* other ) {
 
 
 void Particle::checkBoundaries( float width, float height ) {
-  if (pos.x < 0 || pos.x > width) {
+  if (pos.x < -width/2 || pos.x > width/2) {
     vel.x *= -1;
   }
-  if (pos.y < 0 || pos.y > height) {
+  if (pos.y < -height/2 || pos.y > height/2) {
     vel.y *= -1;
   }
-  pos.x = ofClamp(pos.x, 0, width);
-  pos.y = ofClamp(pos.y, 0, height);
+  pos.x = ofClamp(pos.x, -width/2, width/2);
+  pos.y = ofClamp(pos.y, -height/2, height/2);
 }
 
 

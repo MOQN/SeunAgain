@@ -8,56 +8,95 @@
 #include "ParticleSystem.h"
 
 
-ParticleSystem::ParticleSystem() {
+ParticleSystem::ParticleSystem( PSystemMode _mode ) {
+  mode = _mode;
   stage = 0;
-  gravity = 0.05;
+  boundary = ofPoint(3000,3000);
+}
+ParticleSystem& ParticleSystem::position( ofPoint p ) {
+  pos = p;
+  return *this;
+}
+ParticleSystem& ParticleSystem::setBoundary( ofPoint b ) {
+  boundary = b;
+  return *this;
+}
+ParticleSystem& ParticleSystem::applyImage( ofImage i ) {
+  //
+  return *this;
+}
+ParticleSystem& ParticleSystem::init() {
+  switch ( mode ) {
+    case PS_MODE_NORMAL :
+      normal_init();
+      break;
+    case PS_MODE_FIREWORK :
+      firework_init();
+      break;
+  }
+  return *this;
+}
+void ParticleSystem::update() {
+  switch ( mode ) {
+    case PS_MODE_NORMAL :
+      normal_update();
+      break;
+    case PS_MODE_FIREWORK :
+      firework_update();
+      break;
+  }
+}
+void ParticleSystem::display() {
+  normal_display();
   
-  //pos = ofPoint( ofGetWidth()/2, ofGetHeight() );
-  pos = ofPoint( 0,0 );
-  
+  switch ( mode ) {
+    case PS_MODE_NORMAL :
+      //normal_display();
+      break;
+    case PS_MODE_FIREWORK :
+      //firework_display();
+      break;
+  }
+}
+
+
+void ParticleSystem::normal_init() {
   int num = 0;
   while( num < 100 ) {
     particles.push_back( Particle()
-                        .position( ofPoint( ofRandom(ofGetWidth()),ofRandom(ofGetWidth()) ) )
+                        .position( ofPoint( ofRandom(-boundary.x/2, boundary.x/2), ofRandom(-boundary.y/2, boundary.y/2) ) )
                         .velocity( ofPoint( ofRandom(-5,5),ofRandom(-5,5) ) )
                         );
     num++;
   }
+}
+void ParticleSystem::normal_update() {
+  for (int i = particles.size()-1; i>=0; i--) {
+    Particle* p = &particles[i];
+    p->update();
+    p->checkBoundaries( boundary.x, boundary.y );
+  }
+}
+void ParticleSystem::normal_display() {
+  ofPushStyle();
+  ofPushMatrix();
+  ofTranslate( pos );
   
-  /*
-   img.load("images/test.png");
-   ofPixels pixels = img.getPixels();
-   
-   int resolution = 3;
-   for (int y=0; y<img.getHeight(); y += resolution) {
-   for (int x=0; x<img.getWidth(); x += resolution) {
-   int index = (img.getWidth()*y + x) * 4;
-   
-   float r = pixels[index+0];
-   float g = pixels[index+1];
-   float b = pixels[index+2];
-   
-   if (r+g+b < 245*3 && ofRandom(1.0) < 0.3) {
-   //if this is not white color and 30% chance
-   particles.push_back( Particle()
-   .position( ofPoint(x,y) )
-   );
-   }
-   }
-   }
-   */
   
-  //  numOfParticles = int( ofRandom(100,200) );
-  //
-  //  for (int i=0; i<numOfParticles; i++) {
-  //    particles.push_back( Particle()
-  //                        .position( ofPoint(0,0) )
-  //                        //.velocity( ofPoint( 0, -9) )
-  //                        );
-  //  }
+  for (auto &p : particles) {
+    p.display();
+  }
+  
+  
+  ofPopMatrix();
+  ofPopStyle();
 }
 
-void ParticleSystem::update() {
+
+
+
+
+void ParticleSystem::cell_update() {
   //updateStage();
   
   for (int i = particles.size()-1; i>=0; i--) {
@@ -67,22 +106,48 @@ void ParticleSystem::update() {
   }
 }
 
-void ParticleSystem::display() {
-  ofPushStyle();
-  
-  ofPushMatrix();
-  ofTranslate( pos );
-  for (auto &p : particles) {
-    p.display();
-  }
-  ofPopMatrix();
-  
-  ofSetColor( 255 );
-  ofDrawBitmapString(particles.size(), 10, 20);
-  
-  ofPopStyle();
-}
 
+
+void ParticleSystem::firework_init() {
+  gravity = 0.05;
+  pos = ofPoint( ofGetWidth()/2, ofGetHeight() );
+  
+  img.load("images/test.png");
+  ofPixels pixels = img.getPixels();
+  
+  int resolution = 3;
+  for (int y=0; y<img.getHeight(); y += resolution) {
+    for (int x=0; x<img.getWidth(); x += resolution) {
+      int index = (img.getWidth()*y + x) * 4;
+      
+      float r = pixels[index+0];
+      float g = pixels[index+1];
+      float b = pixels[index+2];
+      
+      if (r+g+b < 245*3 && ofRandom(1.0) < 0.3) {
+        //if this is not white color and 30% chance
+        particles.push_back( Particle()
+                            .position( ofPoint(x,y) )
+                            );
+      }
+    }
+  }
+  //  numOfParticles = int( ofRandom(100,200) );
+  //
+  //  for (int i=0; i<numOfParticles; i++) {
+  //    particles.push_back( Particle()
+  //                        .position( ofPoint(0,0) )
+  //                        //.velocity( ofPoint( 0, -9) )
+  //                        );
+  //  }
+}
+void ParticleSystem::firework_update() {
+  //updateStage();
+  for (int i = particles.size()-1; i>=0; i--) {
+    Particle* p = &particles[i];
+    p->update();
+  }
+}
 void ParticleSystem::updateStage() {
   switch( stage ) {
     case 0:
