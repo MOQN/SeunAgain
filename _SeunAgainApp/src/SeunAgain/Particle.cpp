@@ -15,6 +15,7 @@ Particle::Particle() {
   scaleSine = 1.0;
   scaleSineFreq = ofRandom(0.05, 0.08);
   // shape
+  isLarge = false;
   //isLarge = int( ofRandom(2) );
   if (isLarge) {
     mass = ofRandom(8, 10);

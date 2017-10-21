@@ -46,7 +46,7 @@ void ParticleSystem::update() {
       normal_update();
       break;
     case PS_MODE_SOUND :
-      sound_init();
+      sound_update();
       break;
     case PS_MODE_FIREWORK :
       firework_update();
@@ -110,17 +110,17 @@ void ParticleSystem::normal_init() {
 }
 void ParticleSystem::normal_update() {
   for (int i = particles.size()-1; i>=0; i--) {
-    Particle* p = &particles[i];
-    p->update();
-    p->checkBoundaries( boundary.x, boundary.y );
+    Particle &p = particles[i];
+    p.update();
+    p.checkBoundaries( boundary.x, boundary.y );
   }
 }
 
 void ParticleSystem::cell_update() {
   for (int i = particles.size()-1; i>=0; i--) {
-    Particle* p = &particles[i];
-    p->update();
-    p->checkBoundaries( ofGetWidth(), ofGetHeight() );
+    Particle &p = particles[i];
+    p.update();
+    p.checkBoundaries( ofGetWidth(), ofGetHeight() );
   }
 }
 
@@ -139,8 +139,8 @@ void ParticleSystem::firework_update() {
   if (particles.size() == 0) return;
   firework_updateStage();
   for (int i = particles.size()-1; i>=0; i--) {
-    Particle* p = &particles[i];
-    p->update();
+    Particle &p = particles[i];
+    p.update();
   }
 }
 void ParticleSystem::firework_updateStage() {
@@ -183,8 +183,8 @@ void ParticleSystem::sound_init() {
 }
 void ParticleSystem::sound_update() {
   for (int i = particles.size()-1; i>=0; i--) {
-    Particle *p = &particles[i];
-    p->update();
+    Particle &p = particles[i];
+    p.update();
     //p->checkBoundaries( boundary.x, boundary.y );
   }
 }

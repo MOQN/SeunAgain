@@ -16,6 +16,8 @@
 // Macros
 #define RENDER_FBO_UNTIL 0
 
+#define SIN_COS_RESOLUTION 1440  // 360 * 4
+
 #define WINDOW_WIDTH 1400
 #define WINDOW_HEIGHT 900
 
@@ -27,7 +29,8 @@
 
 #define GUI_WIDTH 200
 
-#define SIN_COS_RESOLUTION 1440  // 360 * 4
+#define SOUND_CIRCLE_PITCH 280
+
 
 
 
@@ -40,7 +43,8 @@ enum PSystemMode {
 enum PSystemScreen {
   PS_SCREEN_CENTER,
   PS_SCREEN_LEFT,
-  PS_SCREEN_RIGHT
+  PS_SCREEN_RIGHT,
+  PS_SCREEN_LR
 };
 
 extern array<float,SIN_COS_RESOLUTION> sinArray, cosArray;
