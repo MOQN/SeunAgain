@@ -49,6 +49,7 @@ public:
 class ParticleSystem {
 public:
   PSystemMode mode;
+  PSystemScreen screen;
   ofPoint boundary;
   
   ofPoint pos;
@@ -61,7 +62,7 @@ public:
   int numOfParticles;
   vector<Particle> particles;
   
-  ParticleSystem( PSystemMode mode );
+  ParticleSystem( PSystemMode psMode, PSystemScreen psScreen );
   ParticleSystem& position( ofPoint p );
   ParticleSystem& setBoundary( ofPoint b );
   ParticleSystem& addFireworkData( FireworkData f );
@@ -72,15 +73,13 @@ public:
   
   void normal_init();
   void normal_update();
-  void normal_display();
-  
   void cell_init();
   void cell_update();
-  void cell_display();
-  
+  void sound_init();
+  void sound_update();
   void firework_init();
   void firework_update();
-  void firework_display();
+  void firework_updateStage();
   
   int stage, count;
   void updateStage();

@@ -8,8 +8,9 @@
 #include "ParticleSystem.h"
 
 
-ParticleSystem::ParticleSystem( PSystemMode _mode ) {
+ParticleSystem::ParticleSystem( PSystemMode _mode, PSystemScreen _screen ) {
   mode = _mode;
+  screen = _screen;
   stage = 0;
   boundary = ofPoint(3000,3000);
 }
@@ -30,6 +31,9 @@ ParticleSystem& ParticleSystem::init() {
     case PS_MODE_NORMAL :
       normal_init();
       break;
+    case PS_MODE_SOUND :
+      sound_init();
+      break;
     case PS_MODE_FIREWORK :
       firework_init();
       break;
@@ -41,23 +45,57 @@ void ParticleSystem::update() {
     case PS_MODE_NORMAL :
       normal_update();
       break;
+    case PS_MODE_SOUND :
+      sound_init();
+      break;
     case PS_MODE_FIREWORK :
       firework_update();
       break;
   }
 }
 void ParticleSystem::display() {
-  normal_display();
+  ofPushStyle();
+  ofPushMatrix();
+  ofTranslate( pos );
   
-  switch ( mode ) {
-    case PS_MODE_NORMAL :
-      //normal_display();
-      break;
-    case PS_MODE_FIREWORK :
-      //firework_display();
-      break;
+  for (auto &p : particles) {
+    p.display();
+  }
+  
+  ofPopMatrix();
+  ofPopStyle();
+}
+
+void ParticleSystem::nextStage() {
+  count = 0;
+  stage++;
+}
+
+void ParticleSystem::applyGravity() {
+  for (auto &p : particles) {
+    p.applyForce( ofPoint(0, gravity * p.mass) );
   }
 }
+
+void ParticleSystem::slowDown( float amount ) {
+  for (auto &p : particles) {
+    p.vel *= amount;
+  }
+}
+
+void ParticleSystem::explode() {
+  if (particles.size() == 0) return;
+  posExplosion = particles[0].pos;
+  for (auto &p : particles) {
+    float randomAngle = ofRandom(TWO_PI);
+    float randomStrength = ofRandom(8*3,15*3);
+    float x = mCos(randomAngle) * randomStrength;
+    float y = mSin(randomAngle) * randomStrength;
+    ofPoint force = ofPoint(x,y);
+    p.applyForce( force );
+  }
+}
+
 
 
 void ParticleSystem::normal_init() {
@@ -77,36 +115,14 @@ void ParticleSystem::normal_update() {
     p->checkBoundaries( boundary.x, boundary.y );
   }
 }
-void ParticleSystem::normal_display() {
-  ofPushStyle();
-  ofPushMatrix();
-  ofTranslate( pos );
-  
-  
-  for (auto &p : particles) {
-    p.display();
-  }
-  
-  
-  ofPopMatrix();
-  ofPopStyle();
-}
-
-
-
-
 
 void ParticleSystem::cell_update() {
-  //updateStage();
-  
   for (int i = particles.size()-1; i>=0; i--) {
     Particle* p = &particles[i];
     p->update();
     p->checkBoundaries( ofGetWidth(), ofGetHeight() );
   }
 }
-
-
 
 void ParticleSystem::firework_init() {
   gravity = 0.05;
@@ -121,13 +137,13 @@ void ParticleSystem::firework_init() {
 }
 void ParticleSystem::firework_update() {
   if (particles.size() == 0) return;
-  updateStage();
+  firework_updateStage();
   for (int i = particles.size()-1; i>=0; i--) {
     Particle* p = &particles[i];
     p->update();
   }
 }
-void ParticleSystem::updateStage() {
+void ParticleSystem::firework_updateStage() {
   if (particles.size() == 0) return;
   switch( stage ) {
     case 0:
@@ -162,33 +178,14 @@ void ParticleSystem::updateStage() {
   count++;
 }
 
-void ParticleSystem::nextStage() {
-  count = 0;
-  stage++;
+void ParticleSystem::sound_init() {
+  // nothing yet
 }
-
-void ParticleSystem::applyGravity() {
-  for (auto &p : particles) {
-    p.applyForce( ofPoint(0, gravity * p.mass) );
-  }
-}
-
-void ParticleSystem::slowDown( float amount ) {
-  for (auto &p : particles) {
-    p.vel *= amount;
-  }
-}
-
-void ParticleSystem::explode() {
-  if (particles.size() == 0) return;
-  posExplosion = particles[0].pos;
-  for (auto &p : particles) {
-    float randomAngle = ofRandom(TWO_PI);
-    float randomStrength = ofRandom(8*3,15*3);
-    float x = mCos(randomAngle) * randomStrength;
-    float y = mSin(randomAngle) * randomStrength;
-    ofPoint force = ofPoint(x,y);
-    p.applyForce( force );
+void ParticleSystem::sound_update() {
+  for (int i = particles.size()-1; i>=0; i--) {
+    Particle *p = &particles[i];
+    p->update();
+    //p->checkBoundaries( boundary.x, boundary.y );
   }
 }
 

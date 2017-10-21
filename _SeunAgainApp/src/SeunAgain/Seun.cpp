@@ -27,29 +27,36 @@ void Seun::init() {
   imgBgCenter.load("images/bg_Center.jpg");
   imgBgLR.load("images/bg_LR.jpg");
   
-  // CENTER
-  pSystems.push_back( ParticleSystem( PS_MODE_FIREWORK )
-                     .addFireworkData( fireworks[0] )
-                     .position( ofPoint(SCREEN_CENTER_WIDTH/2, SCREEN_CENTER_HEIGHT) )
-                     .init()
-                     );
-  /*
-  pSystems.push_back( ParticleSystem( PS_MODE_NORMAL )
+  // SOUND TRIGGER MODE
+  pSystems.push_back( ParticleSystem( PS_MODE_SOUND, PS_SCREEN_CENTER )
                      .position( ofPoint(SCREEN_CENTER_WIDTH/2, SCREEN_CENTER_HEIGHT/2) )
                      .setBoundary( ofPoint(SCREEN_CENTER_WIDTH,
                                            SCREEN_CENTER_HEIGHT) )
                      .init()
                      );
+  // CENTER
+  pSystems.push_back( ParticleSystem( PS_MODE_FIREWORK, PS_SCREEN_CENTER )
+                     .addFireworkData( fireworks[0] )
+                     .position( ofPoint(SCREEN_CENTER_WIDTH/2, SCREEN_CENTER_HEIGHT) )
+                     .init()
+                     );
+  /*
+   pSystems.push_back( ParticleSystem( PS_MODE_NORMAL )
+   .position( ofPoint(SCREEN_CENTER_WIDTH/2, SCREEN_CENTER_HEIGHT/2) )
+   .setBoundary( ofPoint(SCREEN_CENTER_WIDTH,
+   SCREEN_CENTER_HEIGHT) )
+   .init()
+   );
    */
   // LEFT
-  pSystems.push_back( ParticleSystem( PS_MODE_NORMAL )
+  pSystems.push_back( ParticleSystem( PS_MODE_NORMAL, PS_SCREEN_LEFT )
                      .position( ofPoint(SCREEN_LR_WIDTH/2, SCREEN_LR_HEIGHT/2) )
                      .setBoundary( ofPoint(SCREEN_LR_WIDTH,
                                            SCREEN_LR_HEIGHT) )
                      .init()
                      );
   // RIGHT
-  pSystems.push_back( ParticleSystem( PS_MODE_NORMAL )
+  pSystems.push_back( ParticleSystem( PS_MODE_NORMAL, PS_SCREEN_RIGHT )
                      .position( ofPoint(SCREEN_LR_WIDTH/2, SCREEN_LR_HEIGHT/2) )
                      .setBoundary( ofPoint(SCREEN_LR_WIDTH,
                                            SCREEN_LR_HEIGHT) )
@@ -207,7 +214,10 @@ void Seun::updateFBOs() {
   ofSetColor(255,50);
   imgBgCenter.draw(0,0);
   
-  pSystems[0].display();
+  for (auto &ps : pSystems) {
+    if (ps.screen == PS_SCREEN_CENTER) ps.display();
+  }
+  
   
   fboCenter.end();
   
@@ -223,7 +233,9 @@ void Seun::updateFBOs() {
   ofSetColor(255,50);
   imgBgLR.draw(0,0);
   
-  pSystems[1].display();
+  for (auto &ps : pSystems) {
+    if (ps.screen == PS_SCREEN_LEFT) ps.display();
+  }
   
   fboLeft.end();
   
@@ -239,7 +251,9 @@ void Seun::updateFBOs() {
   ofSetColor(255,50);
   imgBgLR.draw(0,0);
   
-  pSystems[2].display();
+  for (auto &ps : pSystems) {
+    if (ps.screen == PS_SCREEN_RIGHT) ps.display();
+  }
   
   fboRight.end();
 }
@@ -315,12 +329,39 @@ void Seun::setupFireworks() {
     ofImage image;
     image.load( filepath );
     fireworks.push_back( FireworkData( &image ) );
-
+    
     cout << "FIREWORK IMAGE LOADED: " << filename << endl;
   }
   cout << endl;
 }
 
+void Seun::wsDataReceived( string incoming ) {
+  vector<string> subStr = ofSplitString(incoming, ",");
+  for(string s : subStr) {
+    if ( s.length() == 2) {
+      mode = ofToInt(s);
+    }
+    else if ( s.length() == 8) {
+      int hue = ofToInt(s.substr(0, 3));
+      int sound = ofToInt(s.substr(3, 1));
+      int x = ofToInt(s.substr(4, 2));
+      int y = ofToInt(s.substr(6, 2));
+      
+      float mappedX = ofMap(x, 0, 99, -SCREEN_CENTER_WIDTH/2, SCREEN_CENTER_WIDTH/2);
+      float mappedY = ofMap(y, 0, 99, -SCREEN_CENTER_HEIGHT/2, SCREEN_CENTER_HEIGHT/2);
+      
+      ofColor c = ofColor(ofRandom(255),ofRandom(255),ofRandom(255));
+      c.setHueAngle(hue);
+      
+      pSystems[0].particles.push_back( Particle()
+                                      .position( ofPoint(mappedX,mappedY) )
+                                      .setColor( c )
+                                      );
+    }
+    
+    
+  }
+}
 
 void Seun::setupGUI() {
   mainParameters.setName("Setting");

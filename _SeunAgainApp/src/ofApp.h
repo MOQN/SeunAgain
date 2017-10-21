@@ -23,8 +23,6 @@ public:
   void dragEvent(ofDragInfo dragInfo);
   void gotMessage(ofMessage msg);
   
-  
-  
   // Websocket
   ofxLibwebsockets::Client client;
   void setupWebsocket();
@@ -37,12 +35,7 @@ public:
   void onMessage( ofxLibwebsockets::Event& args );
   void onBroadcast( ofxLibwebsockets::Event& args );
   
-  //string incoming;
-  //vector<string> readyStr;
-  //int numP;
-  
   // Main App
   Seun seunApp;
-  
   
 };

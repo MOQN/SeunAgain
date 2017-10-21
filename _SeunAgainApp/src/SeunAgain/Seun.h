@@ -20,6 +20,10 @@ public:
   void draw();
   void keyPressed(int key);
   
+  // Sequence
+  int mode = 0;
+  int prevMode = 0;
+  
   // Paritcles
   vector<ParticleSystem> pSystems;
   
@@ -45,6 +49,8 @@ public:
   vector<FireworkData> fireworks;
   void setupFireworks();
   
+  // Websocket Data Received
+  void wsDataReceived( string incoming );
   
   // GUIs
   ofParameterGroup mainParameters;

@@ -34,7 +34,13 @@
 
 enum PSystemMode {
   PS_MODE_NORMAL,
+  PS_MODE_SOUND,
   PS_MODE_FIREWORK
+};
+enum PSystemScreen {
+  PS_SCREEN_CENTER,
+  PS_SCREEN_LEFT,
+  PS_SCREEN_RIGHT
 };
 
 extern array<float,SIN_COS_RESOLUTION> sinArray, cosArray;
