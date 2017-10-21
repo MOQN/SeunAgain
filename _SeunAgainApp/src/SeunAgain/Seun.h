@@ -40,6 +40,7 @@ public:
   vector<ofSoundPlayer> sounds;
   void setupSounds();
   void updateSounds();
+  void triggerSound(int index, float volume, float speed, float pan);
   
   // Image
   ofImage imgBgCenter;

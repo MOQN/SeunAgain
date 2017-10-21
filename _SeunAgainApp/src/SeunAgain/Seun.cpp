@@ -148,21 +148,15 @@ void Seun::keyPressed( int key ) {
   log << char(key) << ": ";
   
   switch (key) {
-    case '0' ... '2':
-      guiDisplayMode = key - '0';
-      log << "DisplayMode Changed";
+    case '0' ... '9':
+      //guiDisplayMode = key - '0';
+      //log << "DisplayMode Changed";
+      int soundIndex;
+      soundIndex = key - '0';
+      triggerSound(soundIndex, 0.75, ofRandom(0.9, 1.1), ofRandom(-1, 1) );
+      log << "Sound Triggered";
       break;
     case 'a':
-      sounds[0].play();
-      sounds[0].setSpeed( ofRandom(0.5, 1.5) );
-      sounds[0].setPan( ofRandom(-1, 1) );
-      log << "Sound Triggered";
-      break;
-    case 's':
-      sounds[1].play();
-      sounds[1].setSpeed( ofRandom(0.5, 1.5) );
-      sounds[1].setPan( ofRandom(-1, 1) );
-      log << "Sound Triggered";
       break;
     default:
       log << "Okay...";
@@ -313,6 +307,12 @@ void Seun::updateSounds() {
   ofSoundUpdate();
 }
 
+void Seun::triggerSound(int index, float volume, float speed, float pan) {
+  sounds[index].play();
+  sounds[index].setVolume( volume );
+  sounds[index].setSpeed( speed );
+  sounds[index].setPan( pan );
+}
 
 void Seun::setupFireworks() {
   ofDirectory dir;
@@ -349,7 +349,6 @@ void Seun::wsDataReceived( string incoming ) {
       
       float mappedX = ofMap(x, 0, 99, -SCREEN_CENTER_WIDTH/2, SCREEN_CENTER_WIDTH/2);
       float mappedY = ofMap(y, 0, 99, -SCREEN_CENTER_HEIGHT/2, SCREEN_CENTER_HEIGHT/2);
-      
       ofColor c = ofColor(ofRandom(255),ofRandom(255),ofRandom(255));
       c.setHueAngle(hue);
       
@@ -357,6 +356,8 @@ void Seun::wsDataReceived( string incoming ) {
                                       .position( ofPoint(mappedX,mappedY) )
                                       .setColor( c )
                                       );
+      //if (mode == 4)
+      triggerSound(sound, 0.75, ofRandom(0.9, 1.1), ofRandom(-1,1));
     }
     
     
