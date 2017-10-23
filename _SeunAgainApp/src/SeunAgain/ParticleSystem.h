@@ -71,6 +71,19 @@ public:
   void update();
   void display();
   
+  // Firework
+  FireworkData firework;
+  ofPoint posExplosion;
+  
+  int stage, count;
+  void updateStage();
+  void nextStage();
+  
+  void removeParticles();
+  void applyGravity();
+  void explode();
+  void slowDown( float amount );
+  
   void normal_init();
   void normal_update();
   void cell_init();
@@ -80,18 +93,5 @@ public:
   void firework_init();
   void firework_update();
   void firework_updateStage();
-  
-  int stage, count;
-  void updateStage();
-  void nextStage();
-  
-  void applyGravity();
-  
-  void slowDown( float amount );
-  
-  // Firework
-  FireworkData firework;
-  ofPoint posExplosion;
-  void explode();
   
 };

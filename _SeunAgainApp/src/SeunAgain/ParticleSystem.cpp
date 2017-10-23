@@ -96,6 +96,13 @@ void ParticleSystem::explode() {
   }
 }
 
+void ParticleSystem::removeParticles() {
+  for (int i = int(particles.size()-1); i>=0; i--) {
+    if (particles[i].isDone) {
+      particles.erase( particles.begin() + i );
+    }
+  }
+}
 
 
 void ParticleSystem::normal_init() {
@@ -109,19 +116,21 @@ void ParticleSystem::normal_init() {
   }
 }
 void ParticleSystem::normal_update() {
-  for (int i = particles.size()-1; i>=0; i--) {
-    Particle &p = particles[i];
+  for (auto &p : particles) {
+    for (auto &other : particles) {
+      if (&p != &other) {
+        p.applyGravitation( other, -30 );
+        //p.checkCollision( other, 0.1 );
+      }
+    }
+    //p.applyAttraction( ofPoint(0,0), 0.01 );
     p.update();
     p.checkBoundaries( boundary.x, boundary.y );
   }
 }
 
 void ParticleSystem::cell_update() {
-  for (int i = particles.size()-1; i>=0; i--) {
-    Particle &p = particles[i];
-    p.update();
-    p.checkBoundaries( ofGetWidth(), ofGetHeight() );
-  }
+  //
 }
 
 void ParticleSystem::firework_init() {
@@ -138,8 +147,8 @@ void ParticleSystem::firework_init() {
 void ParticleSystem::firework_update() {
   if (particles.size() == 0) return;
   firework_updateStage();
-  for (int i = particles.size()-1; i>=0; i--) {
-    Particle &p = particles[i];
+  
+  for (auto &p : particles) {
     p.update();
   }
 }
@@ -182,11 +191,25 @@ void ParticleSystem::sound_init() {
   // nothing yet
 }
 void ParticleSystem::sound_update() {
-  for (int i = particles.size()-1; i>=0; i--) {
-    Particle &p = particles[i];
-    p.update();
-    //p->checkBoundaries( boundary.x, boundary.y );
+  if (screen == PS_SCREEN_CENTER) {
+    for (auto &p : particles) {
+      p.update();
+    }
+  } else {
+    for (auto &p : particles) {
+      ofPoint target = ofPoint( SOUND_CIRCLE_PITCH * (p.section -2), 0 );
+      p.applyAttraction( target, 0.1 );
+      for (auto &other : particles) {
+        p.applyGravitation( other, -30 );
+        p.checkCollision( other, 0.5 );
+      }
+      p.updateLifespan();
+      p.reduceLifespan();
+      p.update();
+      p.applyRestitution(0.98);
+    }
   }
+  removeParticles();
 }
 
 

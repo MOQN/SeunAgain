@@ -15,14 +15,16 @@ public:
   Particle();
   Particle& position( ofPoint p );
   Particle& velocity( ofPoint v );
-  Particle& radius( float r );
-  Particle& angle( float a );
+  Particle& setMass( float m );
+  Particle& setAngle( float a );
   Particle& setColor( ofColor c );
+  Particle& setSection( int s );
+  Particle& setLifeReduction( float l );
   
+  int section;
   ofPoint pos, vel, acc;
-  float mass, rad, radOriginal, theta;
+  float mass, rad, radOriginal, angle;
   float scaleLife, scaleSine, scaleSineFreq;
-  bool isLarge;
   ofColor color;
   float h, s, b, a;
   float lifeSpan, lifeReduction;
@@ -31,8 +33,12 @@ public:
   void update();
   void display();
   void applyForce( ofPoint force );
-  void updateLifespan();
-  void checkLifespan();
-  void checkCollision( Particle* other );
+  void applyRestitution( float amount );
+  void applyAttraction( ofPoint target, float amount );
+  void applyGravitation( Particle &other, float G );
+  void checkCollision( Particle &other, float restitution );
   void checkBoundaries( float width, float height );
+  void updateLifespan();
+  void reduceLifespan();
+  
 };

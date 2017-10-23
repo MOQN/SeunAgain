@@ -51,7 +51,7 @@ void Seun::draw() {
       
       // draw fbos
       ofPushMatrix();
-      ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
+      ofTranslate(ofGetWidth()/2 + guiOffsetX, ofGetHeight()/2);
       ofSetColor(255);
       if (guiDisplayMode == 0) {
         // fixed
@@ -241,6 +241,7 @@ void Seun::setupSounds() {
   dir.open( "sounds" );
   dir.allowExt("wav");
   dir.listDir();
+  dir.sort();
   
   for (int i=0; i<dir.size(); i++) {
     filepath = dir.getPath(i);
@@ -289,6 +290,8 @@ void Seun::setupFireworks() {
 
 void Seun::wsDataReceived( string incoming ) {
   vector<string> subStr = ofSplitString(incoming, ",");
+  if (!guiWebsocketToggle) return;
+  
   for(string s : subStr) {
     if ( s.length() == 2) {
       resetMode();
@@ -298,18 +301,22 @@ void Seun::wsDataReceived( string incoming ) {
       int strH = ofToInt(s.substr(0, 3));
       int strS = ofToInt(s.substr(3, 1));
       int strB = ofToInt(s.substr(4, 1));
-      int sound = ofToInt(s.substr(5, 1));
+      //int sound = ofToInt(s.substr(5, 1));
       int strX = ofToInt(s.substr(6, 2));
       int strY = ofToInt(s.substr(8, 2));
       
       float hue = ofMap(strH, 0, 359, 0, 255);
-      float sat = ofMap(strS, 0, 9, 0, 255);
-      float bri = ofMap(strB, 0, 9, 255 * 0.3, 255 * 0.8);
+      float sat = ofMap(strS, 0, 9, 255 * 0.5, 255);
+      float bri = ofMap(strB, 0, 9, 255 * 0.5, 255);
       float x = ofMap(strX, 0, 99, -SCREEN_CENTER_WIDTH/2, SCREEN_CENTER_WIDTH/2);
       float y = ofMap(strY, 0, 99, -SCREEN_CENTER_HEIGHT/2, SCREEN_CENTER_HEIGHT/2);
       
       ofColor c;
       c.setHsb(hue, sat, bri);
+      
+      
+      // generate particles
+      int section = floor(strH / (360/5));
       if (mode == 6) {
         if (pSystems.size() > 2) {
           pSystems[0].particles.push_back( Particle()
@@ -317,20 +324,52 @@ void Seun::wsDataReceived( string incoming ) {
                                           //.velocity( ofPoint(ofRandom(-1,1),ofRandom(-1,1)) )
                                           .setColor( c )
                                           );
-          float newX = SOUND_CIRCLE_PITCH * -2 + SOUND_CIRCLE_PITCH * floor(hue / (255/5));
+          float newX = SOUND_CIRCLE_PITCH * -2 + SOUND_CIRCLE_PITCH * section;
           pSystems[1].particles.push_back( Particle()
                                           .position( ofPoint(newX,0) )
-                                          .velocity( ofPoint(ofRandom(-0.1,0.1),ofRandom(-0.1,0.1)) )
+                                          .velocity( ofPoint(ofRandom(-3,3),ofRandom(-3,3)) )
+                                          .setMass( ofRandom(5,12) )
                                           .setColor( c )
+                                          .setSection( section )
+                                          .setLifeReduction( 0.001 )
                                           );
           pSystems[2].particles.push_back( Particle()
                                           .position( ofPoint(newX,0) )
-                                          .velocity( ofPoint(ofRandom(-0.1,0.1),ofRandom(-0.1,0.1)) )
+                                          .velocity( ofPoint(ofRandom(-3,3),ofRandom(-1,3)) )
+                                          .setMass( ofRandom(5,12) )
                                           .setColor( c )
+                                          .setSection( section )
+                                          .setLifeReduction( 0.001 )
                                           );
+          
+          //0.0005
         }
       }
-      if (mode == 4) triggerSound(sound, 0.75, ofRandom(0.9, 1.1), ofRandom(-1,1));
+      
+      // trigger sound
+      int soundIndex = floor( ofRandom(section * 6, (section+1) * 6) );
+      switch (section) {
+        case 0:
+          // 0: other
+          triggerSound(soundIndex, ofRandom(0.7, 1.0), 1.0, ofRandom(-1,1));
+          break;
+        case 1:
+          // 1: Environment
+          triggerSound(soundIndex, ofRandom(0.5, 0.9), ofRandom(0.9, 1.1), ofRandom(-1,1));
+          break;
+        case 2:
+          // 2: Perccusion
+          triggerSound(soundIndex, ofRandom(0.9, 1.0), ofRandom(0.5, 1.5), ofRandom(-1,1));
+          break;
+        case 3:
+          // 3: Futuristic
+          triggerSound(soundIndex, ofRandom(0.4, 0.6), ofRandom(0.5, 1.5), ofRandom(-1,1));
+          break;
+        case 4:
+          // 4: Old Seun
+          triggerSound(soundIndex, ofRandom(0.6, 0.9), ofRandom(0.95, 1.05), ofRandom(-1,1));
+          break;
+      }
     }
     
     
@@ -339,16 +378,24 @@ void Seun::wsDataReceived( string incoming ) {
 
 void Seun::setupGUI() {
   mainParameters.setName("Setting");
+  mainParameters.add( guiSequenceMode.set("Mode", 0, 0, 6) );
+  mainParameters.add( guiWebsocketToggle.set("Websocket", false) );
+  mainParameters.add( guiSyphonToggle.set("Syphon", false) );
   mainParameters.add( guiDisplayMode.set("DisplayMode", 1, 0, 2) );
   mainParameters.add( guiScale.set("Scale", 0.48, 0.35, 1.0) );
-  mainParameters.add( guiSyphonToggle.set("SyphonToggle", false) );
+  mainParameters.add( guiOffsetX.set("X-Offset", 0, -1200, 1200) );
   
   mainGui.setup(mainParameters);
   mainGui.setPosition(ofGetWidth() - GUI_WIDTH, 0);
 }
 
 void Seun::updateGUI() {
-  //mScale = ofLerp(mScale, guiScale, 0.005);
+  // update mode
+  if (guiSequenceMode != prevSequenceMode) {
+    resetMode();
+    mode = guiSequenceMode;
+  }
+  prevSequenceMode = guiSequenceMode;
 }
 
 
@@ -598,11 +645,12 @@ void Seun::modeTest_display( PSystemScreen screen ) {
       ofPushMatrix();
       ofTranslate(SCREEN_LR_WIDTH/2, SCREEN_LR_HEIGHT/2);
       
-      ofNoFill();
-      ofSetColor(255, 100);
-      int gap = 280;
-      for (int x = gap * -2; x <= gap * 2; x += gap) {
-        ofDrawCircle(x, 0, 100);
+      for (int x = SOUND_CIRCLE_PITCH * -2; x <= SOUND_CIRCLE_PITCH * 2; x += SOUND_CIRCLE_PITCH) {
+        ofColor c;
+        float h = ofMap(x , SOUND_CIRCLE_PITCH * -2, SOUND_CIRCLE_PITCH * 3, 0, 255) + 255/10;
+        c.setHsb(h, 255, 255, 50);
+        ofSetColor( c );
+        ofDrawCircle(x, 0, 80);
       } 
       
       ofPopMatrix();

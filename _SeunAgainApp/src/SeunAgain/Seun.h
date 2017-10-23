@@ -51,15 +51,21 @@ public:
   
   // GUIs
   ofParameterGroup mainParameters;
+  ofParameter<int> guiSequenceMode;
+  int prevSequenceMode = -1;
+  ofParameter<bool> guiWebsocketToggle;
+  ofParameter<bool> guiSyphonToggle;
   ofParameter<int> guiDisplayMode;
   ofParameter<float> guiScale;
-  ofParameter<bool> guiSyphonToggle;
+  ofParameter<float> guiOffsetX;
+  
+  
   ofxPanel mainGui;
   void setupGUI();
   void updateGUI();
   
   // Sequence (Mode)
-  int mode = 6;
+  int mode = 0;
   bool modeChanged = false;
   void updateVisuals();
   void displayVisuals( PSystemScreen screen );
