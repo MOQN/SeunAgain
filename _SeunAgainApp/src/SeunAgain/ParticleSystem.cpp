@@ -12,7 +12,9 @@ ParticleSystem::ParticleSystem( PSystemMode _mode, PSystemScreen _screen ) {
   mode = _mode;
   screen = _screen;
   stage = 0;
-  boundary = ofPoint(3000,3000);
+  boundary = ofPoint(30000,30000);
+  scale = ofRandom(0.5, 1.0);
+  rotationSpeed = ofRandom(0.3, 0.8);
 }
 ParticleSystem& ParticleSystem::position( ofPoint p ) {
   pos = p;
@@ -29,7 +31,7 @@ ParticleSystem& ParticleSystem::addFireworkData( FireworkData f ) {
 ParticleSystem& ParticleSystem::init() {
   switch ( mode ) {
     case PS_MODE_NORMAL :
-      normal_init();
+      //
       break;
     case PS_MODE_SOUND :
       sound_init();
@@ -37,13 +39,16 @@ ParticleSystem& ParticleSystem::init() {
     case PS_MODE_FIREWORK :
       firework_init();
       break;
+    case PS_MODE_TEST :
+      test_init();
+      break;
   }
   return *this;
 }
 void ParticleSystem::update() {
   switch ( mode ) {
     case PS_MODE_NORMAL :
-      normal_update();
+      //
       break;
     case PS_MODE_SOUND :
       sound_update();
@@ -51,12 +56,20 @@ void ParticleSystem::update() {
     case PS_MODE_FIREWORK :
       firework_update();
       break;
+    case PS_MODE_TEST :
+      test_update();
+      break;
   }
 }
 void ParticleSystem::display() {
   ofPushStyle();
   ofPushMatrix();
   ofTranslate( pos );
+  
+  if (mode == PS_MODE_FIREWORK) {
+    ofRotate( ofGetFrameNum() * rotationSpeed );
+    ofScale( scale, scale );
+  }
   
   for (auto &p : particles) {
     p.display();
@@ -105,7 +118,7 @@ void ParticleSystem::removeParticles() {
 }
 
 
-void ParticleSystem::normal_init() {
+void ParticleSystem::test_init() {
   int num = 0;
   while( num < 100 ) {
     particles.push_back( Particle()
@@ -115,7 +128,7 @@ void ParticleSystem::normal_init() {
     num++;
   }
 }
-void ParticleSystem::normal_update() {
+void ParticleSystem::test_update() {
   for (auto &p : particles) {
     for (auto &other : particles) {
       if (&p != &other) {
@@ -129,18 +142,15 @@ void ParticleSystem::normal_update() {
   }
 }
 
-void ParticleSystem::cell_update() {
-  //
-}
-
 void ParticleSystem::firework_init() {
   gravity = 0.05;
   
   for (int i=0; i<firework.number; i++) {
     particles.push_back( Particle()
-                        .position( ofPoint(0,0) )
+                        .position( ofPoint(0,1200) )
                         .velocity( ofPoint( 0, -11) )
                         .setColor( firework.colors[i] )
+                        .setScaleSineAmp(0.15)
                         );
   }
 }
@@ -149,8 +159,11 @@ void ParticleSystem::firework_update() {
   firework_updateStage();
   
   for (auto &p : particles) {
+    p.updateLifespan();
     p.update();
   }
+  
+  removeParticles();
 }
 void ParticleSystem::firework_updateStage() {
   if (particles.size() == 0) return;
@@ -177,6 +190,11 @@ void ParticleSystem::firework_updateStage() {
     case 2:
       gravity = ofLerp(gravity, 0.5, 0.01);
       applyGravity();
+      for (auto &p : particles) {
+        if (p.pos.y > 3000) {
+          p.isDone = true;
+        }
+      }
       break;
     case 3:
       

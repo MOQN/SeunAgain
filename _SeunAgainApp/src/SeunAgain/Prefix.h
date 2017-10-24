@@ -25,20 +25,21 @@
 #define SCREEN_CENTER_HEIGHT 1800
 #define SCREEN_LR_WIDTH 1500
 #define SCREEN_LR_HEIGHT 600
-#define SCREEN_GAP 200
+#define SCREEN_GAP 30
 
 #define GUI_WIDTH 200
 
 #define SOUND_CIRCLE_PITCH 280
 
-
+#define PARTICLE_SIZE 3
 
 
 
 enum PSystemMode {
   PS_MODE_NORMAL,
   PS_MODE_SOUND,
-  PS_MODE_FIREWORK
+  PS_MODE_FIREWORK,
+  PS_MODE_TEST,
 };
 enum PSystemScreen {
   PS_SCREEN_CENTER,
@@ -48,8 +49,7 @@ enum PSystemScreen {
 };
 
 extern array<float,SIN_COS_RESOLUTION> sinArray, cosArray;
-
-
+extern float G_gravity, G_attraction;
 
 static void setupSinCos() {
   for (int i=0; i<SIN_COS_RESOLUTION; i++) {

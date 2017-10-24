@@ -9,3 +9,4 @@
 
 
 array<float, SIN_COS_RESOLUTION> sinArray, cosArray;
+float G_gravity, G_attraction;

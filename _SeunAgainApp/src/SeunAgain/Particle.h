@@ -20,11 +20,15 @@ public:
   Particle& setColor( ofColor c );
   Particle& setSection( int s );
   Particle& setLifeReduction( float l );
+  Particle& setScaleLifeTarget( float start, float end );
+  Particle& setScaleSine( float freq, float amp );
+  Particle& setScaleSineAmp( float amp );
   
   int section;
   ofPoint pos, vel, acc;
   float mass, rad, radOriginal, angle;
-  float scaleLife, scaleSine, scaleSineFreq;
+  float scaleLife, scaleLifeStart, scaleLifeTarget;
+  float scaleSine, scaleSineFreq, scaleSineAmp;
   ofColor color;
   float h, s, b, a;
   float lifeSpan, lifeReduction;

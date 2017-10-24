@@ -49,27 +49,35 @@ public:
   // Websocket Data Received
   void wsDataReceived( string incoming );
   
+  // Mapped Mouse X Y
+  ofPoint getScaledMouse();
+  
   // GUIs
   ofParameterGroup mainParameters;
-  ofParameter<int> guiSequenceMode;
-  int prevSequenceMode = -1;
+  ofParameter<int> guiMainMode;
+  int prevMainMode = -1;
   ofParameter<bool> guiWebsocketToggle;
   ofParameter<bool> guiSyphonToggle;
   ofParameter<int> guiDisplayMode;
   ofParameter<float> guiScale;
   ofParameter<float> guiOffsetX;
-  
+  // Opening
+  ofParameter<float> guiAttaction;
+  ofParameter<float> guiGravity;
   
   ofxPanel mainGui;
   void setupGUI();
   void updateGUI();
   
-  // Sequence (Mode)
+  // Mode & Sequence
   int mode = 0;
+  int sequence = 0;
+  int prevSequence = 0;
+  int count = 0;
   bool modeChanged = false;
+  void changeMode( int m );
   void updateVisuals();
   void displayVisuals( PSystemScreen screen );
-  void resetMode();
   void modeReady_init();
   void modeReady_update();
   void modeReady_display( PSystemScreen screen );
@@ -89,4 +97,25 @@ public:
   void modeTest_update();
   void modeTest_display( PSystemScreen screen );
   
+  void modeOpening_init();
+  void modeOpening_update();
+  void modeOpening_display( PSystemScreen screen );
+  void modeOpening_seq1_rectNoise( PSystemScreen screen );
+  void modeOpening_seq2_rectRythm( PSystemScreen screen );
+  void modeOpening_seq3_circleRythm( PSystemScreen screen );
+  void modeOpening_seq4_circleAttraction( PSystemScreen screen );
+  void modeOpening_seq5_circleRepultion( PSystemScreen screen );
+  void modeOpening_seq6_fireworks( PSystemScreen screen );
+  
 };
+
+
+
+
+
+
+
+
+
+
+//

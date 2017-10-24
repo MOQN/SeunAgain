@@ -79,6 +79,9 @@ void Seun::draw() {
       
       ofPopStyle();
       break;
+    case 3:
+      // draw grid for mapping ***
+      break;
   }
   
   mainGui.draw();
@@ -100,6 +103,7 @@ void Seun::draw() {
   stringstream info;
   info << "fps: " << int(ofGetFrameRate()) << endl << endl;;
   info << "mode: " << mode << endl << endl;;
+  info << "Seq: " << sequence << endl << endl;;
   for (int i=0; i<pSystems.size(); i++) {
     info << i <<  ": " << pSystems[i].particles.size() << endl;
   }
@@ -113,23 +117,36 @@ void Seun::keyPressed( int key ) {
   
   switch (key) {
     case '0' ... '9':
-      //guiDisplayMode = key - '0';
-      //log << "DisplayMode Changed";
-      int soundIndex;
-      soundIndex = key - '0';
-      triggerSound(soundIndex, 0.75, ofRandom(0.9, 1.1), ofRandom(-1, 1) );
-      log << "Sound Triggered";
+      sequence = key - '0';
+      log << "SequenceChanged: " << sequence;
+      cout << log.str() << endl;
       break;
     case 'a':
-      break;
-    default:
-      log << "Okay...";
+      /*
+       int soundIndex;
+       soundIndex = key - '0';
+       triggerSound(soundIndex, 0.75, ofRandom(0.9, 1.1), ofRandom(-1, 1) );
+       log << "Sound Triggered";
+       */
       break;
   }
-  
-  cout << log.str() << endl;
 }
 
+ofPoint Seun::getScaledMouse() {
+  float x = ofMap( ofGetMouseX()-ofGetWidth()/2 , -SCREEN_CENTER_WIDTH/2 * guiScale, SCREEN_CENTER_WIDTH/2 * guiScale, -SCREEN_CENTER_WIDTH/2, SCREEN_CENTER_WIDTH/2);
+  float y = ofMap( ofGetMouseY()-ofGetHeight()/2 , -SCREEN_CENTER_HEIGHT/2 * guiScale, SCREEN_CENTER_HEIGHT/2 * guiScale, -SCREEN_CENTER_HEIGHT/2, SCREEN_CENTER_HEIGHT/2);
+  
+  if (x < -SCREEN_CENTER_WIDTH/2 - SCREEN_GAP) {
+    x = x + SCREEN_LR_WIDTH/2 + SCREEN_CENTER_WIDTH/2 + SCREEN_GAP;
+    return ofPoint(x,y,1);
+  }
+  else if (x > SCREEN_CENTER_WIDTH/2 + SCREEN_GAP) {
+    x = x - SCREEN_LR_WIDTH/2 - SCREEN_CENTER_WIDTH/2 - SCREEN_GAP;
+    return ofPoint(x,y,2);
+  } else {
+    return ofPoint(x,y,0);
+  }
+}
 
 void Seun::setupFBOs() {
   // GL_RGBA32F_ARB?
@@ -294,8 +311,7 @@ void Seun::wsDataReceived( string incoming ) {
   
   for(string s : subStr) {
     if ( s.length() == 2) {
-      resetMode();
-      mode = ofToInt(s);
+      changeMode( ofToInt(s) );
     }
     else if ( s.length() == 10) {
       int strH = ofToInt(s.substr(0, 3));
@@ -376,43 +392,12 @@ void Seun::wsDataReceived( string incoming ) {
   }
 }
 
-void Seun::setupGUI() {
-  mainParameters.setName("Setting");
-  mainParameters.add( guiSequenceMode.set("Mode", 0, 0, 6) );
-  mainParameters.add( guiWebsocketToggle.set("Websocket", false) );
-  mainParameters.add( guiSyphonToggle.set("Syphon", false) );
-  mainParameters.add( guiDisplayMode.set("DisplayMode", 1, 0, 2) );
-  mainParameters.add( guiScale.set("Scale", 0.48, 0.35, 1.0) );
-  mainParameters.add( guiOffsetX.set("X-Offset", 0, -1200, 1200) );
-  
-  mainGui.setup(mainParameters);
-  mainGui.setPosition(ofGetWidth() - GUI_WIDTH, 0);
-}
-
-void Seun::updateGUI() {
-  // update mode
-  if (guiSequenceMode != prevSequenceMode) {
-    resetMode();
-    mode = guiSequenceMode;
-  }
-  prevSequenceMode = guiSequenceMode;
-}
-
-
-
-
-
-
-
-
-
-
 
 
 ///// Sequence Methods /////
 void Seun::updateVisuals() {
   switch (mode) {
-    case 0:
+    case 9:
       if (modeChanged) modeReady_init();
       modeReady_update();
       break;
@@ -420,25 +405,25 @@ void Seun::updateVisuals() {
       if (modeChanged) modeTouchShake_init();
       modeTouchShake_update();
       break;
-    case 2:
-      if (modeChanged) modeTouchShake_init();
-      modeTouchShake_update();
-      break;
-    case 3:
+    case 2 ... 5:
       if (modeChanged) modeMelody_init();
       modeMelody_update();
       break;
-    case 4:
+    case 6:
       if (modeChanged) modeSeunSori_init();
       modeSeunSori_update();
       break;
-    case 5:
+    case 7:
       if (modeChanged) modeFinale_init();
       modeFinale_update();
       break;
-    case 6:
+    case 8:
       if (modeChanged) modeTest_init();
       modeTest_update();
+      break;
+    case 0:
+      if (modeChanged) modeOpening_init();
+      modeOpening_update();
       break;
   }
   // update particles
@@ -449,26 +434,26 @@ void Seun::updateVisuals() {
 
 void Seun::displayVisuals( PSystemScreen screen ) {
   switch (mode) {
-    case 0:
+    case 9:
       modeReady_display( screen );
       break;
     case 1:
       modeTouchShake_display( screen );
       break;
-    case 2:
-      modeTouchShake_display( screen );
-      break;
-    case 3:
+    case 2 ... 5:
       modeMelody_display( screen );
       break;
-    case 4:
+    case 6:
       modeSeunSori_display( screen );
       break;
-    case 5:
+    case 7:
       modeFinale_display( screen );
       break;
-    case 6:
+    case 8:
       modeTest_display( screen );
+      break;
+    case 0:
+      modeOpening_display( screen );
       break;
   }
   // draw particles
@@ -477,8 +462,11 @@ void Seun::displayVisuals( PSystemScreen screen ) {
   }
 }
 
-void Seun::resetMode() {
+void Seun::changeMode( int m ) {
   modeChanged = true;
+  mode = m;
+  sequence = 0;
+  count = 0;
   pSystems.clear();
 }
 
@@ -611,7 +599,7 @@ void Seun::modeFinale_display( PSystemScreen screen ) {
   }
 }
 
-// Mode: Finale
+// Mode: Test
 void Seun::modeTest_init() {
   modeChanged = false;
   // SOUND TRIGGER MODE
@@ -651,7 +639,7 @@ void Seun::modeTest_display( PSystemScreen screen ) {
         c.setHsb(h, 255, 255, 50);
         ofSetColor( c );
         ofDrawCircle(x, 0, 80);
-      } 
+      }
       
       ofPopMatrix();
       ofPopStyle();

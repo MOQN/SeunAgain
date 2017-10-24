@@ -9,15 +9,22 @@
 
 
 Particle::Particle() {
+  pos = ofPoint(0,0);
+  vel = ofPoint(0,0);
+  acc = ofPoint(0,0);
   // life
   lifeSpan = 1.0;
   lifeReduction = ofRandom(0.0005,0.005);
   scaleLife = 0.0;
+  scaleLifeStart = 0.0;
+  scaleLifeTarget = 0.0;
   scaleSine = 1.0;
   scaleSineFreq = ofRandom(0.05, 0.08);
+  scaleSineAmp = 0;
+  isDone = false;
   // shape
   mass = ofRandom(1, 3);
-  rad = radOriginal = mass * 3;
+  rad = radOriginal = mass * PARTICLE_SIZE;
   // color
   h = ofRandom(255);
   s = ofRandom(255);
@@ -37,7 +44,7 @@ Particle& Particle::velocity( ofPoint v ) {
 }
 Particle& Particle::setMass( float m ) {
   mass = m;
-  rad = radOriginal = mass * 3;
+  rad = radOriginal = mass * PARTICLE_SIZE;
   return *this;
 }
 Particle& Particle::setAngle( float a ) {
@@ -56,6 +63,20 @@ Particle& Particle::setLifeReduction( float l ) {
   lifeReduction = l;
   return *this;
 }
+Particle& Particle::setScaleLifeTarget( float start, float end ) {
+  scaleLifeStart = start;
+  scaleLifeTarget = end;
+  return *this;
+}
+Particle& Particle::setScaleSine( float freq, float amp ) {
+  scaleSineFreq = freq;
+  scaleSineAmp = amp;
+  return *this;
+}
+Particle& Particle::setScaleSineAmp( float amp ) {
+  scaleSineAmp = amp;
+  return *this;
+}
 
 void Particle::update() {
   // physics
@@ -64,7 +85,9 @@ void Particle::update() {
   acc *= 0;
   vel.limit(20);
   // radius
-  scaleSine = 1.0 + mSin(ofGetFrameNum() * scaleSineFreq) * 0.15;
+  if(scaleSineAmp > 0) {
+    scaleSine = 1.0 + mSin(ofGetFrameNum() * scaleSineFreq) * scaleSineAmp;
+  }
   rad = radOriginal * scaleLife * scaleSine;
   // angle
   
@@ -82,7 +105,7 @@ void Particle::display() {
   
   ofRotate( angle );
   
-  ofSetColor( color );
+  ofSetColor( color, a );
   ofDrawCircle(0, 0, rad);
   
   ofPopMatrix();
@@ -107,7 +130,7 @@ void Particle::applyAttraction( ofPoint target, float amount ) {
 
 void Particle::applyGravitation( Particle &other, float G ) {
   float distance = pos.distance( other.pos );
-  if (distance > rad + other.rad) {
+  if (distance > rad + other.rad + 10) {
     ofPoint vector =  other.pos - pos;
     vector.normalize();
     float strength = (G * mass * other.mass) / (distance * distance);
@@ -134,7 +157,7 @@ void Particle::checkCollision( Particle &other, float restitution ) {
     force *= -1;
     force.normalize();
     force *= vel.length() * restitution;
-    this->applyForce( force );
+    applyForce( force );
   }
 }
 
@@ -155,8 +178,12 @@ void Particle::checkBoundaries( float width, float height ) {
 
 void Particle::updateLifespan() {
   
-  float dying = 0.1;
-  if (lifeSpan >= dying) {
+  float dying = 0.15;
+  
+  if (scaleLifeTarget > 0) {
+    scaleLife = ofMap(lifeSpan, 1.0, 0.0, scaleLifeStart, scaleLifeTarget);
+  }
+  else if (lifeSpan >= dying) {
     // born & live
     if (scaleLife > 0.99) {
       scaleLife = 1.0;
@@ -166,6 +193,7 @@ void Particle::updateLifespan() {
   } else {
     // dying
     scaleLife = ofMap(lifeSpan, dying, 0.0, 1.0, 0.0);
+    a = ofMap(lifeSpan, dying, 0.0, 255, 0);
   }
 }
 
