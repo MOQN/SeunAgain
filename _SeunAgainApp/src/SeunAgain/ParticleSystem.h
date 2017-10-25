@@ -35,8 +35,8 @@ public:
         float b = pixels[index+2];
         float a = pixels[index+3];
         
-        if (a > 0 && ofRandom(1.0) < 0.4) {
-          //if this is not white color and 40% chance
+        if (a > 0 && ofRandom(1.0) < 0.3) {
+          //if this is not white color and 30% chance
           pos.push_back( ofPoint(x - w/2 ,y - h/2) );
           colors.push_back( ofColor(r,g,b) );
           number++;
@@ -83,13 +83,24 @@ public:
   void applyGravity();
   void explode();
   void slowDown( float amount );
-  
-  void test_init();
-  void test_update();
+
   void sound_init();
   void sound_update();
+  
   void firework_init();
   void firework_update();
   void firework_updateStage();
+  void firework3D_update();
   
 };
+
+
+
+
+
+
+
+
+
+
+

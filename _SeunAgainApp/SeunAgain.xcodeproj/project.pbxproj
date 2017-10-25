@@ -9,10 +9,12 @@
 /* Begin PBXBuildFile section */
 		0B55E0671F9DE3E8005FB6B6 /* Seun_GUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0B55E0661F9DE3E8005FB6B6 /* Seun_GUI.cpp */; };
 		0B55E0701F9DF91A005FB6B6 /* Seun_Opening.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0B55E06F1F9DF91A005FB6B6 /* Seun_Opening.cpp */; };
+		0B71DBDD1FA0E6B900DFE808 /* Seun_Websocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0B71DBDC1FA0E6B900DFE808 /* Seun_Websocket.cpp */; };
 		0B732F1A1F96819B00B20F2A /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0B732F121F96819A00B20F2A /* ParticleSystem.cpp */; };
 		0B732F1B1F96819B00B20F2A /* Seun.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0B732F131F96819B00B20F2A /* Seun.cpp */; };
 		0B732F1C1F96819B00B20F2A /* Particle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0B732F151F96819B00B20F2A /* Particle.cpp */; };
 		0B732F1D1F96819B00B20F2A /* Prefix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0B732F191F96819B00B20F2A /* Prefix.cpp */; };
+		0BDB228A1F9FA6FB00332B59 /* Seun_Closing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0BDB22891F9FA6FB00332B59 /* Seun_Closing.cpp */; };
 		11DF9AB1B4EAA63E3B190CA0 /* ofxSyphonServerDirectory.mm in Sources */ = {isa = PBXBuildFile; fileRef = E723BEF4C55D236E24639608 /* ofxSyphonServerDirectory.mm */; };
 		1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 907C5B5E104864A2D3A25745 /* ofxToggle.cpp */; };
 		1F558B76FB3412843DDAA031 /* ofxSyphonClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = 03EA4DA95B5E1B8409FC058E /* ofxSyphonClient.mm */; };
@@ -81,6 +83,7 @@
 		0A1DAC09F322AE313A40706D /* ofxToggle.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxToggle.h; path = ../../../addons/ofxGui/src/ofxToggle.h; sourceTree = SOURCE_ROOT; };
 		0B55E0661F9DE3E8005FB6B6 /* Seun_GUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Seun_GUI.cpp; sourceTree = "<group>"; };
 		0B55E06F1F9DF91A005FB6B6 /* Seun_Opening.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Seun_Opening.cpp; sourceTree = "<group>"; };
+		0B71DBDC1FA0E6B900DFE808 /* Seun_Websocket.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Seun_Websocket.cpp; sourceTree = "<group>"; };
 		0B732F121F96819A00B20F2A /* ParticleSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleSystem.cpp; sourceTree = "<group>"; };
 		0B732F131F96819B00B20F2A /* Seun.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Seun.cpp; sourceTree = "<group>"; };
 		0B732F141F96819B00B20F2A /* Seun.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Seun.h; sourceTree = "<group>"; };
@@ -89,6 +92,7 @@
 		0B732F171F96819B00B20F2A /* Particle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Particle.h; sourceTree = "<group>"; };
 		0B732F181F96819B00B20F2A /* ParticleSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParticleSystem.h; sourceTree = "<group>"; };
 		0B732F191F96819B00B20F2A /* Prefix.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Prefix.cpp; sourceTree = "<group>"; };
+		0BDB22891F9FA6FB00332B59 /* Seun_Closing.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Seun_Closing.cpp; sourceTree = "<group>"; };
 		0FB83AC7747296DD35C1C295 /* ofxSyphon.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxSyphon.h; path = ../../../addons/ofxSyphon/src/ofxSyphon.h; sourceTree = SOURCE_ROOT; };
 		123354539C152F1EE3FFC190 /* json-forwards.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = "json-forwards.h"; path = "../../../addons/ofxLibwebsockets/libs/jsoncpp/json/json-forwards.h"; sourceTree = SOURCE_ROOT; };
 		15F2C6477A769C03A56D1401 /* ofxSlider.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxSlider.cpp; path = ../../../addons/ofxGui/src/ofxSlider.cpp; sourceTree = SOURCE_ROOT; };
@@ -168,8 +172,10 @@
 				0B732F191F96819B00B20F2A /* Prefix.cpp */,
 				0B732F141F96819B00B20F2A /* Seun.h */,
 				0B732F131F96819B00B20F2A /* Seun.cpp */,
-				0B55E06F1F9DF91A005FB6B6 /* Seun_Opening.cpp */,
+				0B71DBDC1FA0E6B900DFE808 /* Seun_Websocket.cpp */,
 				0B55E0661F9DE3E8005FB6B6 /* Seun_GUI.cpp */,
+				0B55E06F1F9DF91A005FB6B6 /* Seun_Opening.cpp */,
+				0BDB22891F9FA6FB00332B59 /* Seun_Closing.cpp */,
 				0B732F171F96819B00B20F2A /* Particle.h */,
 				0B732F151F96819B00B20F2A /* Particle.cpp */,
 				0B732F181F96819B00B20F2A /* ParticleSystem.h */,
@@ -569,6 +575,7 @@
 				837220E80EB56CD44AD27F2A /* ofxSlider.cpp in Sources */,
 				0B732F1B1F96819B00B20F2A /* Seun.cpp in Sources */,
 				B56FE57CC35806596D38118C /* ofxSliderGroup.cpp in Sources */,
+				0BDB228A1F9FA6FB00332B59 /* Seun_Closing.cpp in Sources */,
 				0B55E0701F9DF91A005FB6B6 /* Seun_Opening.cpp in Sources */,
 				1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */,
 				9EF1133BC23669A5C94FE30F /* jsoncpp.cpp in Sources */,
@@ -579,6 +586,7 @@
 				0B55E0671F9DE3E8005FB6B6 /* Seun_GUI.cpp in Sources */,
 				6D73A566CFEC0B462FE6E43C /* Reactor.cpp in Sources */,
 				F3AD9E2A2E56B6AF32A0BDAF /* Server.cpp in Sources */,
+				0B71DBDD1FA0E6B900DFE808 /* Seun_Websocket.cpp in Sources */,
 				0B732F1A1F96819B00B20F2A /* ParticleSystem.cpp in Sources */,
 				CCD326ED8E01272042317DD2 /* Util.cpp in Sources */,
 				1F558B76FB3412843DDAA031 /* ofxSyphonClient.mm in Sources */,

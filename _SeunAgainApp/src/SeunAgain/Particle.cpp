@@ -9,9 +9,9 @@
 
 
 Particle::Particle() {
-  pos = ofPoint(0,0);
-  vel = ofPoint(0,0);
-  acc = ofPoint(0,0);
+  pos = ofPoint(0,0,0);
+  vel = ofPoint(0,0,0);
+  acc = ofPoint(0,0,0);
   // life
   lifeSpan = 1.0;
   lifeReduction = ofRandom(0.0005,0.005);
@@ -25,6 +25,9 @@ Particle::Particle() {
   // shape
   mass = ofRandom(1, 3);
   rad = radOriginal = mass * PARTICLE_SIZE;
+  // angle
+  angle = ofPoint(0,0,0);
+  angleVel = ofPoint(0,0,0);
   // color
   h = ofRandom(255);
   s = ofRandom(255);
@@ -47,8 +50,12 @@ Particle& Particle::setMass( float m ) {
   rad = radOriginal = mass * PARTICLE_SIZE;
   return *this;
 }
-Particle& Particle::setAngle( float a ) {
+Particle& Particle::setAngle( ofPoint a ) {
   angle = a;
+  return *this;
+}
+Particle& Particle::setAngleVelocity( ofPoint aVel ) {
+  angleVel = aVel;
   return *this;
 }
 Particle& Particle::setColor( ofColor c ) {
@@ -89,12 +96,15 @@ void Particle::update() {
     scaleSine = 1.0 + mSin(ofGetFrameNum() * scaleSineFreq) * scaleSineAmp;
   }
   rad = radOriginal * scaleLife * scaleSine;
-  // angle
   
-  // color
-  //color.setHsb(h, s, b, a);
   // life
   updateLifespan();
+}
+void Particle::updateAngle() {
+  angle += angleVel;
+}
+void Particle::updateColor() {
+  //color.setHsb(h, s, b, a);
 }
 
 
@@ -103,10 +113,110 @@ void Particle::display() {
   ofPushMatrix();
   ofTranslate( pos );
   
-  ofRotate( angle );
+  //ofRotate( angle.z );
   
   ofSetColor( color, a );
   ofDrawCircle(0, 0, rad);
+  
+  ofPopMatrix();
+  ofPopStyle();
+}
+
+void Particle::display3D( ParticleShape shape, float alpha ) {
+  ofPushStyle();
+  ofPushMatrix();
+  ofTranslate( pos );
+  
+  ofRotateX( angle.x );
+  ofRotateY( angle.y );
+  ofRotateZ( angle.z );
+  
+  ofSetLineWidth(3);
+  switch ( shape ) {
+    case P_SHAPE_CIRCLE:
+      ofFill();
+      ofSetColor( color, alpha );
+      ofDrawCircle(0, 0, 0, rad);
+      ofNoFill();
+      ofSetColor( color );
+      ofDrawCircle(0, 0, 0, rad);
+      break;
+    case P_SHAPE_PLANE:
+      ofFill();
+      ofSetColor( color, alpha );
+      ofDrawPlane(0, 0, 0, rad*2, rad*2);
+      ofNoFill();
+      ofSetColor( color );
+      ofDrawPlane(0, 0, 0, rad*2, rad*2);
+      break;
+    case P_SHAPE_BOX:
+      ofFill();
+      ofSetColor( color, alpha );
+      ofDrawBox(0, 0, 0, rad*2, rad*2, rad*2 * G_depth);
+      ofNoFill();
+      ofSetColor( color );
+      ofDrawBox(0, 0, 0, rad*2, rad*2, rad*2 * G_depth);
+      break;
+    case P_SHAPE_SPHERE:
+      ofFill();
+      ofSetColor( color, alpha );
+      ofDrawSphere(0, 0, 0, rad);
+      ofNoFill();
+      ofSetColor( color );
+      ofDrawSphere(0, 0, 0, rad);
+      break;
+    case P_SHAPE_CONE:
+      ofFill();
+      ofSetColor( color, alpha );
+      ofDrawCone(0, 0, 0, rad, rad*1.5);
+      ofNoFill();
+      ofSetColor( color );
+      ofDrawCone(0, 0, 0, rad, rad*1.5);
+      break;
+    case P_SHAPE_PIPE:
+      ofFill();
+      ofSetColor( color, alpha );
+      ofDrawCylinder(0, 0, 0, rad/2, rad*1.5);
+      ofNoFill();
+      ofSetColor( color );
+      ofDrawCylinder(0, 0, 0, rad/2, rad*1.5);
+      break;
+  }
+  
+  ofPopMatrix();
+  ofPopStyle();
+}
+
+void Particle::display3D( ParticleShape shape, float w, float h, float d ) {
+  ofPushStyle();
+  ofPushMatrix();
+  ofTranslate( pos );
+  
+  ofRotateX( angle.x );
+  ofRotateY( angle.y );
+  ofRotateZ( angle.z );
+  
+  ofSetColor( color, a );
+  switch ( shape ) {
+    case P_SHAPE_CIRCLE:
+      ofDrawCircle(0, 0, 0, w);
+      break;
+    case P_SHAPE_PLANE:
+      ofDrawPlane(0, 0, 0, w, h);
+      break;
+    case P_SHAPE_BOX:
+      ofDrawBox(0, 0, 0, w, h, d);
+      break;
+    case P_SHAPE_SPHERE:
+      ofDrawSphere(0, 0, 0, w);
+      break;
+    case P_SHAPE_CONE:
+      ofDrawCone(0, 0, 0, w, h);
+      break;
+    case P_SHAPE_PIPE:
+      ofDrawCylinder(0, 0, 0, w, h);
+      break;
+  }
   
   ofPopMatrix();
   ofPopStyle();
@@ -173,7 +283,27 @@ void Particle::checkBoundaries( float width, float height ) {
   pos.y = ofClamp(pos.y, -height/2 + 1, height/2 - 1);
 }
 
+void Particle::checkBoundaries( float width, float height, float depth ) {
+  if (pos.x < -width/2 || pos.x > width/2) {
+    vel.x *= -1;
+  }
+  if (pos.y < -height/2 || pos.y > height/2) {
+    vel.y *= -1;
+  }
+  if (pos.z < -depth/2 || pos.z > depth/2) {
+    vel.z *= -1;
+  }
+  pos.x = ofClamp(pos.x, -width/2 + 1, width/2 - 1);
+  pos.y = ofClamp(pos.y, -height/2 + 1, height/2 - 1);
+  pos.z = ofClamp(pos.z, -depth/2 + 1, depth/2 - 1);
+}
 
+void Particle::checkBottomOnly( float height ) {
+  if (pos.y < -height/2 ) {
+    vel.y *= -1;
+    pos.y = -height/2 + 1;
+  }
+}
 
 
 void Particle::updateLifespan() {

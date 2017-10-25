@@ -112,7 +112,7 @@ void ofApp::displayWebsocket() {
     ss << "Client is disconnected.";
   }
   
-  ofDrawBitmapString( ss.str(), 10, 160);
+  ofDrawBitmapString( ss.str(), 100, 20);
   
   //ofDrawBitmapString(client.isConnected() ? "Client is connected" : "Client disconnected :(", 10, 120);
   

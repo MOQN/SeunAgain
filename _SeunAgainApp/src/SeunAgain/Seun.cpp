@@ -26,13 +26,14 @@ void Seun::init() {
   
   imgBgCenter.load("images/bg_Center.jpg");
   imgBgLR.load("images/bg_LR.jpg");
+  imgUrl.load("images/url.png");
 }
 
 
 void Seun::update() {
   
   updateGUI();
-  updateVisuals();
+  initVisuals();
   updateFBOs();
   updateSounds();
   
@@ -108,10 +109,14 @@ void Seun::draw() {
     info << i <<  ": " << pSystems[i].particles.size() << endl;
   }
   ofDrawBitmapString( info.str() , 10, 20);
+  
+  ofDrawBitmapString( bgmOpening.getPosition(), ofGetWidth()/2-150, 20 );
+  ofDrawBitmapString( bgmClosing.getPosition(), ofGetWidth()/2+150, 20 );
 }
 
 
 void Seun::keyPressed( int key ) {
+  keyCode = key;
   stringstream log;
   log << char(key) << ": ";
   
@@ -251,6 +256,15 @@ void Seun::renderFBOs() {
 
 
 void Seun::setupSounds() {
+  // load bgms
+  bgmOpening.load("bgms/opening.wav");
+  bgmOpening.setVolume(0.0f);
+  bgmOpening.setMultiPlay(false);
+  bgmClosing.load("bgms/closing.wav");
+  bgmClosing.setVolume(0.0f);
+  bgmClosing.setMultiPlay(false);
+  
+  // load sounds
   ofDirectory dir;
   string filepath, filename;
   
@@ -275,6 +289,47 @@ void Seun::setupSounds() {
 
 void Seun::updateSounds() {
   ofSoundUpdate();
+  
+  // closing bgm
+  if (mode == 4) {
+    if ( !bgmClosing.isPlaying() ) {
+      bgmClosing.play();
+    }
+    float volume = ofLerp(bgmClosing.getVolume(), 1.0, 0.05);
+    bgmClosing.setVolume(volume);
+    if (bgmClosing.getPosition() > 0.995) {
+      mode = 5;
+    }
+  } else {
+    if ( bgmClosing.isPlaying() ) {
+      if ( bgmClosing.getVolume() > 0.005 ) {
+        float volume = ofLerp(bgmClosing.getVolume(), 0.0, 0.02);
+        bgmClosing.setVolume(volume);
+      } else {
+        bgmClosing.stop();
+      }
+    }
+  }
+  // opening bgm
+  if (mode == 6) {
+    if ( !bgmOpening.isPlaying() ) {
+      bgmOpening.play();
+    }
+    float volume = ofLerp(bgmOpening.getVolume(), 1.0, 0.05);
+    bgmOpening.setVolume(volume);
+    if (bgmOpening.getPosition() > 0.995) {
+      mode = 5;
+    }
+  } else {
+    if ( bgmOpening.isPlaying() ) {
+      if ( bgmOpening.getVolume() > 0.005 ) {
+        float volume = ofLerp(bgmOpening.getVolume(), 0.0, 0.02);
+        bgmOpening.setVolume(volume);
+      } else {
+        bgmOpening.stop();
+      }
+    }
+  }
 }
 
 void Seun::triggerSound(int index, float volume, float speed, float pan) {
@@ -305,125 +360,34 @@ void Seun::setupFireworks() {
   cout << endl;
 }
 
-void Seun::wsDataReceived( string incoming ) {
-  vector<string> subStr = ofSplitString(incoming, ",");
-  if (!guiWebsocketToggle) return;
-  
-  for(string s : subStr) {
-    if ( s.length() == 2) {
-      changeMode( ofToInt(s) );
-    }
-    else if ( s.length() == 10) {
-      int strH = ofToInt(s.substr(0, 3));
-      int strS = ofToInt(s.substr(3, 1));
-      int strB = ofToInt(s.substr(4, 1));
-      //int sound = ofToInt(s.substr(5, 1));
-      int strX = ofToInt(s.substr(6, 2));
-      int strY = ofToInt(s.substr(8, 2));
-      
-      float hue = ofMap(strH, 0, 359, 0, 255);
-      float sat = ofMap(strS, 0, 9, 255 * 0.5, 255);
-      float bri = ofMap(strB, 0, 9, 255 * 0.5, 255);
-      float x = ofMap(strX, 0, 99, -SCREEN_CENTER_WIDTH/2, SCREEN_CENTER_WIDTH/2);
-      float y = ofMap(strY, 0, 99, -SCREEN_CENTER_HEIGHT/2, SCREEN_CENTER_HEIGHT/2);
-      
-      ofColor c;
-      c.setHsb(hue, sat, bri);
-      
-      
-      // generate particles
-      int section = floor(strH / (360/5));
-      if (mode == 6) {
-        if (pSystems.size() > 2) {
-          pSystems[0].particles.push_back( Particle()
-                                          .position( ofPoint(x,y) )
-                                          //.velocity( ofPoint(ofRandom(-1,1),ofRandom(-1,1)) )
-                                          .setColor( c )
-                                          );
-          float newX = SOUND_CIRCLE_PITCH * -2 + SOUND_CIRCLE_PITCH * section;
-          pSystems[1].particles.push_back( Particle()
-                                          .position( ofPoint(newX,0) )
-                                          .velocity( ofPoint(ofRandom(-3,3),ofRandom(-3,3)) )
-                                          .setMass( ofRandom(5,12) )
-                                          .setColor( c )
-                                          .setSection( section )
-                                          .setLifeReduction( 0.001 )
-                                          );
-          pSystems[2].particles.push_back( Particle()
-                                          .position( ofPoint(newX,0) )
-                                          .velocity( ofPoint(ofRandom(-3,3),ofRandom(-1,3)) )
-                                          .setMass( ofRandom(5,12) )
-                                          .setColor( c )
-                                          .setSection( section )
-                                          .setLifeReduction( 0.001 )
-                                          );
-          
-          //0.0005
-        }
-      }
-      
-      // trigger sound
-      int soundIndex = floor( ofRandom(section * 6, (section+1) * 6) );
-      switch (section) {
-        case 0:
-          // 0: other
-          triggerSound(soundIndex, ofRandom(0.7, 1.0), 1.0, ofRandom(-1,1));
-          break;
-        case 1:
-          // 1: Environment
-          triggerSound(soundIndex, ofRandom(0.5, 0.9), ofRandom(0.9, 1.1), ofRandom(-1,1));
-          break;
-        case 2:
-          // 2: Perccusion
-          triggerSound(soundIndex, ofRandom(0.9, 1.0), ofRandom(0.5, 1.5), ofRandom(-1,1));
-          break;
-        case 3:
-          // 3: Futuristic
-          triggerSound(soundIndex, ofRandom(0.4, 0.6), ofRandom(0.5, 1.5), ofRandom(-1,1));
-          break;
-        case 4:
-          // 4: Old Seun
-          triggerSound(soundIndex, ofRandom(0.6, 0.9), ofRandom(0.95, 1.05), ofRandom(-1,1));
-          break;
-      }
-    }
-    
-    
-  }
-}
+
 
 
 
 ///// Sequence Methods /////
-void Seun::updateVisuals() {
+void Seun::initVisuals() {
   switch (mode) {
-    case 9:
+    case 0:
       if (modeChanged) modeReady_init();
-      modeReady_update();
       break;
     case 1:
       if (modeChanged) modeTouchShake_init();
-      modeTouchShake_update();
       break;
-    case 2 ... 5:
+    case 2:
       if (modeChanged) modeMelody_init();
-      modeMelody_update();
+      break;
+    case 3:
+      if (modeChanged) modeSeunSori_init();
+      break;
+    case 4:
+      if (modeChanged) modeClosing_init();
+      break;
+    case 5:
+      if (modeChanged) modeTest_init();
+      
       break;
     case 6:
-      if (modeChanged) modeSeunSori_init();
-      modeSeunSori_update();
-      break;
-    case 7:
-      if (modeChanged) modeFinale_init();
-      modeFinale_update();
-      break;
-    case 8:
-      if (modeChanged) modeTest_init();
-      modeTest_update();
-      break;
-    case 0:
       if (modeChanged) modeOpening_init();
-      modeOpening_update();
       break;
   }
   // update particles
@@ -434,31 +398,31 @@ void Seun::updateVisuals() {
 
 void Seun::displayVisuals( PSystemScreen screen ) {
   switch (mode) {
-    case 9:
+    case 0:
       modeReady_display( screen );
       break;
     case 1:
       modeTouchShake_display( screen );
       break;
-    case 2 ... 5:
+    case 2:
       modeMelody_display( screen );
       break;
-    case 6:
+    case 3:
       modeSeunSori_display( screen );
       break;
-    case 7:
-      modeFinale_display( screen );
+    case 4:
+      modeClosing_display( screen );
       break;
-    case 8:
+    case 5:
       modeTest_display( screen );
       break;
-    case 0:
+    case 6:
       modeOpening_display( screen );
       break;
   }
   // draw particles
   for (auto &ps : pSystems) {
-    if (ps.screen == screen) ps.display();
+    if (ps.screen == screen && ps.mode != PS_MODE_3D) ps.display();
   }
 }
 
@@ -474,41 +438,13 @@ void Seun::changeMode( int m ) {
 // Mode: Ready
 void Seun::modeReady_init() {
   modeChanged = false;
-  // CENTER
-  pSystems.push_back( ParticleSystem( PS_MODE_FIREWORK, PS_SCREEN_CENTER )
-                     .addFireworkData( fireworks[0] )
-                     .position( ofPoint(SCREEN_CENTER_WIDTH/2, SCREEN_CENTER_HEIGHT) )
-                     .init()
-                     );
-  /*
-   pSystems.push_back( ParticleSystem( PS_MODE_NORMAL )
-   .position( ofPoint(SCREEN_CENTER_WIDTH/2, SCREEN_CENTER_HEIGHT/2) )
-   .setBoundary( ofPoint(SCREEN_CENTER_WIDTH,
-   SCREEN_CENTER_HEIGHT) )
-   .init()
-   );
-   */
-  // LEFT
-  pSystems.push_back( ParticleSystem( PS_MODE_NORMAL, PS_SCREEN_LEFT )
-                     .position( ofPoint(SCREEN_LR_WIDTH/2, SCREEN_LR_HEIGHT/2) )
-                     .setBoundary( ofPoint(SCREEN_LR_WIDTH,
-                                           SCREEN_LR_HEIGHT) )
-                     .init()
-                     );
-  // RIGHT
-  pSystems.push_back( ParticleSystem( PS_MODE_NORMAL, PS_SCREEN_RIGHT )
-                     .position( ofPoint(SCREEN_LR_WIDTH/2, SCREEN_LR_HEIGHT/2) )
-                     .setBoundary( ofPoint(SCREEN_LR_WIDTH,
-                                           SCREEN_LR_HEIGHT) )
-                     .init()
-                     );
-}
-void Seun::modeReady_update() {
-  
+  // nothing!
 }
 void Seun::modeReady_display( PSystemScreen screen ) {
   switch ( screen ) {
     case PS_SCREEN_CENTER:
+      ofSetColor(255);
+      imgUrl.draw(0,SCREEN_CENTER_HEIGHT/2 + URL_IMAGE_ADJUSTMENT);
       break;
     case PS_SCREEN_LEFT:
       break;
@@ -522,38 +458,140 @@ void Seun::modeReady_display( PSystemScreen screen ) {
 // Mode: Touch & Shake
 void Seun::modeTouchShake_init() {
   modeChanged = false;
-}
-void Seun::modeTouchShake_update() {
+  // CENTER
+  pSystems.push_back( ParticleSystem( PS_MODE_NORMAL, PS_SCREEN_CENTER )
+                     .position( ofPoint(SCREEN_CENTER_WIDTH/2, SCREEN_CENTER_HEIGHT/2) )
+                     );
+  pSystems.push_back( ParticleSystem( PS_MODE_NORMAL, PS_SCREEN_LEFT )
+                     .position( ofPoint(SCREEN_LR_WIDTH/2, SCREEN_LR_HEIGHT/2) )
+                     .setBoundary( ofPoint(SCREEN_LR_WIDTH, SCREEN_LR_HEIGHT) )
+                     );
+  pSystems.push_back( ParticleSystem( PS_MODE_NORMAL, PS_SCREEN_RIGHT )
+                     .position( ofPoint(SCREEN_LR_WIDTH/2, SCREEN_LR_HEIGHT/2) )
+                     .setBoundary( ofPoint(SCREEN_LR_WIDTH, SCREEN_LR_HEIGHT) )
+                     );
   
 }
 void Seun::modeTouchShake_display( PSystemScreen screen ) {
   switch ( screen ) {
     case PS_SCREEN_CENTER:
+    {
+      ParticleSystem &ps = pSystems[0];
+      for (auto &p : ps.particles) {
+        p.updateLifespan();
+        p.reduceLifespan();
+        p.update();
+      }
+      ps.removeParticles();
       break;
+    }
     case PS_SCREEN_LEFT:
+    {
+      ParticleSystem &ps = pSystems[1];
+      for (auto &p : ps.particles) {
+        p.updateLifespan();
+        p.reduceLifespan();
+        p.update();
+      }
+      ps.removeParticles();
       break;
+    }
     case PS_SCREEN_RIGHT:
+    {
+      ParticleSystem &ps = pSystems[2];
+      for (auto &p : ps.particles) {
+        p.updateLifespan();
+        p.reduceLifespan();
+        p.update();
+      }
+      ps.removeParticles();
       break;
+    }
     case PS_SCREEN_LR:
       break;
   }
 }
 
-// Mode: Touch & Shake
+// Mode: Melody
 void Seun::modeMelody_init() {
   modeChanged = false;
-}
-void Seun::modeMelody_update() {
-  
+  pSystems.push_back( ParticleSystem( PS_MODE_NORMAL, PS_SCREEN_CENTER )
+                     .position( ofPoint(SCREEN_CENTER_WIDTH/2, SCREEN_CENTER_HEIGHT/2) )
+                     );
+  pSystems.push_back( ParticleSystem( PS_MODE_NORMAL, PS_SCREEN_LEFT )
+                     .position( ofPoint(SCREEN_LR_WIDTH/2, SCREEN_LR_HEIGHT/2) )
+                     .setBoundary( ofPoint(SCREEN_LR_WIDTH, SCREEN_LR_HEIGHT) )
+                     );
+  pSystems.push_back( ParticleSystem( PS_MODE_NORMAL, PS_SCREEN_RIGHT )
+                     .position( ofPoint(SCREEN_LR_WIDTH/2, SCREEN_LR_HEIGHT/2) )
+                     .setBoundary( ofPoint(SCREEN_LR_WIDTH, SCREEN_LR_HEIGHT) )
+                     );
 }
 void Seun::modeMelody_display( PSystemScreen screen ) {
+  
+  // update
+  if (pSystems.size() > 2) {
+    if (pSystems[0].particles.size() < 500 && ofRandom(1) < 0.1) {
+      pSystems[0].particles.push_back( Particle()
+                                      .position( ofPoint(ofRandom(-SCREEN_CENTER_WIDTH/2,SCREEN_CENTER_WIDTH/2),
+                                                         ofRandom(-SCREEN_CENTER_HEIGHT/2,SCREEN_CENTER_HEIGHT/2) ) )
+                                      .velocity( ofPoint(ofRandom(-1.5,1.5),ofRandom(-1.5,1.5)) )
+                                      .setMass( ofRandom(5,10) )
+                                      .setLifeReduction( ofRandom(0.007, 0.008) )
+                                      .setScaleSineAmp(0.2)
+                                      .setScaleLifeTarget(1.0, 0.0)
+                                      );
+      pSystems[1].particles.push_back( Particle()
+                                      .position( ofPoint(SCREEN_LR_WIDTH/2,ofRandom(-SCREEN_LR_WIDTH/2,SCREEN_LR_WIDTH/2)) )
+                                      .velocity( ofPoint(ofRandom(-3,-6), ofRandom(-2,2)) )
+                                      .setMass( ofRandom(3,10) )
+                                      .setLifeReduction( ofRandom(0.001, 0.01) )
+                                      .setScaleSineAmp(0.2)
+                                      );
+      pSystems[2].particles.push_back( Particle()
+                                      .position( ofPoint(-SCREEN_LR_WIDTH/2,ofRandom(-SCREEN_LR_WIDTH/2,SCREEN_LR_WIDTH/2)) )
+                                      .velocity( ofPoint(ofRandom(3,6), ofRandom(-2,2)) )
+                                      .setMass( ofRandom(3,10) )
+                                      .setLifeReduction( ofRandom(0.001, 0.01) )
+                                      .setScaleSineAmp(0.2)
+                                      );
+    }
+  }
+  
   switch ( screen ) {
     case PS_SCREEN_CENTER:
+    {
+      ParticleSystem &ps = pSystems[0];
+      for (auto &p : ps.particles) {
+        p.updateLifespan();
+        p.reduceLifespan();
+        p.update();
+      }
+      ps.removeParticles();
       break;
+    }
     case PS_SCREEN_LEFT:
+    {
+      ParticleSystem &ps = pSystems[1];
+      for (auto &p : ps.particles) {
+        p.updateLifespan();
+        p.reduceLifespan();
+        p.update();
+      }
+      ps.removeParticles();
       break;
+    }
     case PS_SCREEN_RIGHT:
+    {
+      ParticleSystem &ps = pSystems[2];
+      for (auto &p : ps.particles) {
+        p.updateLifespan();
+        p.reduceLifespan();
+        p.update();
+      }
+      ps.removeParticles();
       break;
+    }
     case PS_SCREEN_LR:
       break;
   }
@@ -561,46 +599,6 @@ void Seun::modeMelody_display( PSystemScreen screen ) {
 
 // Mode: SeunSori
 void Seun::modeSeunSori_init() {
-  modeChanged = false;
-}
-void Seun::modeSeunSori_update() {
-  
-}
-void Seun::modeSeunSori_display( PSystemScreen screen ) {
-  switch ( screen ) {
-    case PS_SCREEN_CENTER:
-      break;
-    case PS_SCREEN_LEFT:
-      break;
-    case PS_SCREEN_RIGHT:
-      break;
-    case PS_SCREEN_LR:
-      break;
-  }
-}
-
-// Mode: Finale
-void Seun::modeFinale_init() {
-  modeChanged = false;
-}
-void Seun::modeFinale_update() {
-  
-}
-void Seun::modeFinale_display( PSystemScreen screen ) {
-  switch ( screen ) {
-    case PS_SCREEN_CENTER:
-      break;
-    case PS_SCREEN_LEFT:
-      break;
-    case PS_SCREEN_RIGHT:
-      break;
-    case PS_SCREEN_LR:
-      break;
-  }
-}
-
-// Mode: Test
-void Seun::modeTest_init() {
   modeChanged = false;
   // SOUND TRIGGER MODE
   // CENTER
@@ -620,11 +618,7 @@ void Seun::modeTest_init() {
                      );
   
 }
-void Seun::modeTest_update() {
-  
-}
-void Seun::modeTest_display( PSystemScreen screen ) {
-  
+void Seun::modeSeunSori_display( PSystemScreen screen ) {
   switch ( screen ) {
     case PS_SCREEN_CENTER:
       break;
@@ -647,8 +641,51 @@ void Seun::modeTest_display( PSystemScreen screen ) {
   }
 }
 
-
-
+// Mode: Test
+void Seun::modeTest_init() {
+  modeChanged = false;
+  if (TEST_MODE == 0) return;
+  // SOUND TRIGGER MODE
+  // CENTER
+  pSystems.push_back( ParticleSystem( PS_MODE_SOUND, PS_SCREEN_CENTER )
+                     .position( ofPoint(SCREEN_CENTER_WIDTH/2, SCREEN_CENTER_HEIGHT/2) )
+                     .init()
+                     );
+  // LEFT
+  pSystems.push_back( ParticleSystem( PS_MODE_SOUND, PS_SCREEN_LEFT )
+                     .position( ofPoint(SCREEN_LR_WIDTH/2, SCREEN_LR_HEIGHT/2) )
+                     .init()
+                     );
+  // RIGHT
+  pSystems.push_back( ParticleSystem( PS_MODE_SOUND, PS_SCREEN_RIGHT )
+                     .position( ofPoint(SCREEN_LR_WIDTH/2, SCREEN_LR_HEIGHT/2) )
+                     .init()
+                     );
+  
+}
+void Seun::modeTest_display( PSystemScreen screen ) {
+  if (TEST_MODE == 0) return;
+  switch ( screen ) {
+    case PS_SCREEN_CENTER:
+      break;
+    default:
+      ofPushStyle();
+      ofPushMatrix();
+      ofTranslate(SCREEN_LR_WIDTH/2, SCREEN_LR_HEIGHT/2);
+      
+      for (int x = SOUND_CIRCLE_PITCH * -2; x <= SOUND_CIRCLE_PITCH * 2; x += SOUND_CIRCLE_PITCH) {
+        ofColor c;
+        float h = ofMap(x , SOUND_CIRCLE_PITCH * -2, SOUND_CIRCLE_PITCH * 3, 0, 255) + 255/10;
+        c.setHsb(h, 255, 255, 50);
+        ofSetColor( c );
+        ofDrawCircle(x, 0, 80);
+      }
+      
+      ofPopMatrix();
+      ofPopStyle();
+      break;
+  }
+}
 
 
 

@@ -24,9 +24,6 @@ void Seun::modeOpening_init() {
                      .setBoundary( ofPoint(SCREEN_LR_WIDTH, SCREEN_LR_HEIGHT) )
                      );
 }
-void Seun::modeOpening_update() {
-  //
-}
 void Seun::modeOpening_display( PSystemScreen screen ) {
   ofPushStyle();
   
@@ -135,7 +132,7 @@ void Seun::modeOpening_seq2_rectRythm( PSystemScreen screen ) {
   static bool init = true;
   static vector<ofColor> colors;
   static float keyCount = 8;
-  static int keyInterval = 50;
+  static int triggerInterval = 50;
   
   if (init) {
     init = false;
@@ -151,8 +148,8 @@ void Seun::modeOpening_seq2_rectRythm( PSystemScreen screen ) {
   // draw
   float rectSize = SCREEN_CENTER_WIDTH*2 / keyCount;
   
-  if (ofGetKeyPressed() && keyInterval <= 0) {
-    keyInterval = 50;
+  if (ofGetKeyPressed() && triggerInterval <= 0) {
+    triggerInterval = 50;
     keyCount /= 2;
     if (keyCount == 0.5) {
       keyCount = 8;
@@ -168,10 +165,10 @@ void Seun::modeOpening_seq2_rectRythm( PSystemScreen screen ) {
     }
   }
   
-  if (keyInterval > 0) {
-    keyInterval--;
+  if (triggerInterval > 0) {
+    triggerInterval--;
   } else {
-    keyInterval = 0;
+    triggerInterval = 0;
   }
   
   
@@ -230,14 +227,14 @@ void Seun::modeOpening_seq2_rectRythm( PSystemScreen screen ) {
 
 
 void Seun::modeOpening_seq3_circleRythm( PSystemScreen screen ) {
-  static int keyInterval = 50;
+  static int triggerInterval = 50;
   
   if (prevSequence != sequence && pSystems.size() == 0) {
     modeOpening_init();
   }
   
-  if (ofGetKeyPressed() && keyInterval <= 0) {
-    keyInterval = 50;
+  if (ofGetKeyPressed() && triggerInterval <= 0) {
+    triggerInterval = 50;
     // CENTER
     pSystems[0].particles.push_back( Particle()
                                     .position( ofPoint(ofRandom(-150,150),ofRandom(-150,150)) )
@@ -260,10 +257,10 @@ void Seun::modeOpening_seq3_circleRythm( PSystemScreen screen ) {
                                     .setLifeReduction( ofRandom(0.001, 0.01) )
                                     );
   }
-  if (keyInterval > 0) {
-    keyInterval--;
+  if (triggerInterval > 0) {
+    triggerInterval--;
   } else {
-    keyInterval = 0;
+    triggerInterval = 0;
   }
   
   // draw
@@ -311,14 +308,14 @@ void Seun::modeOpening_seq3_circleRythm( PSystemScreen screen ) {
 
 void Seun::modeOpening_seq4_circleAttraction( PSystemScreen screen ) {
   // init
-  static int keyInterval = 50;
+  static int triggerInterval = 50;
   
   if (prevSequence != sequence && pSystems.size() == 0) {
     modeOpening_init();
   }
   
-  if (ofGetKeyPressed() && keyInterval <= 0) {
-    keyInterval = 50;
+  if (ofGetKeyPressed() && triggerInterval <= 0) {
+    triggerInterval = 50;
     // CENTER
     pSystems[0].particles.push_back( Particle()
                                     .position( ofPoint(ofRandom(-30,30),ofRandom(-30,30)) )
@@ -342,10 +339,10 @@ void Seun::modeOpening_seq4_circleAttraction( PSystemScreen screen ) {
                                     );
     pSystems[2].particles[0].pos.x;
   }
-  if (keyInterval > 0) {
-    keyInterval--;
+  if (triggerInterval > 0) {
+    triggerInterval--;
   } else {
-    keyInterval = 0;
+    triggerInterval = 0;
   }
   
   // draw
@@ -400,14 +397,14 @@ void Seun::modeOpening_seq4_circleAttraction( PSystemScreen screen ) {
 
 void Seun::modeOpening_seq5_circleRepultion( PSystemScreen screen ) {
   // init
-  static int keyInterval = 50;
+  static int triggerInterval = 50;
   
   if (prevSequence != sequence && pSystems.size() == 0) {
     modeOpening_init();
   }
 
   if (ofRandom(1) < 0.1) {
-    keyInterval = 50;
+    triggerInterval = 50;
     // CENTER
     pSystems[0].particles.push_back( Particle()
                                     .position( ofPoint(ofRandom(-30,30),ofRandom(-30,30)) )
@@ -431,10 +428,10 @@ void Seun::modeOpening_seq5_circleRepultion( PSystemScreen screen ) {
                                     );
     
   }
-  if (keyInterval > 0) {
-    keyInterval--;
+  if (triggerInterval > 0) {
+    triggerInterval--;
   } else {
-    keyInterval = 0;
+    triggerInterval = 0;
   }
   
   // draw
@@ -506,7 +503,7 @@ void Seun::modeOpening_seq5_circleRepultion( PSystemScreen screen ) {
 
 void Seun::modeOpening_seq6_fireworks( PSystemScreen screen ) {
   
-  static int keyInterval = 50;
+  static int triggerInterval = 50;
 
   if (prevSequence != sequence) {
     if (pSystems.size() == 0) {
@@ -521,7 +518,7 @@ void Seun::modeOpening_seq6_fireworks( PSystemScreen screen ) {
     }
   }
   
-  if (ofGetMousePressed() && keyInterval <= 0) {
+  if (ofGetMousePressed() && triggerInterval <= 0) {
     ofPoint mouse = getScaledMouse();
 //    pSystems[mouse.z].particles.push_back( Particle()
 //                                          .position( ofPoint(mouse.x, mouse.y) )
@@ -551,12 +548,12 @@ void Seun::modeOpening_seq6_fireworks( PSystemScreen screen ) {
                          .init()
                          );
     }
-    keyInterval = 50;
+    triggerInterval = 50;
   }
-  if (keyInterval > 0) {
-    keyInterval--;
+  if (triggerInterval > 0) {
+    triggerInterval--;
   } else {
-    keyInterval = 0;
+    triggerInterval = 0;
   }
   
   

@@ -29,10 +29,16 @@ public:
   void setupFBOs();
   void updateFBOs();
   
+  // Cam
+  ofEasyCam camCenter, camLeft, camRight;
+  ofPoint rotationAngle = ofPoint(0,0,0);
+  
   // Save PNGs
   void renderFBOs();
   
   // Sound
+  ofSoundPlayer bgmOpening;
+  ofSoundPlayer bgmClosing;
   vector<ofSoundPlayer> sounds;
   void setupSounds();
   void updateSounds();
@@ -41,6 +47,7 @@ public:
   // Image
   ofImage imgBgCenter;
   ofImage imgBgLR;
+  ofImage imgUrl;
   
   // Firework Data
   vector<FireworkData> fireworks;
@@ -62,43 +69,51 @@ public:
   ofParameter<float> guiScale;
   ofParameter<float> guiOffsetX;
   // Opening
-  ofParameter<float> guiAttaction;
+  ofParameter<float> guiAttraction;
   ofParameter<float> guiGravity;
+  // Closing
+  ofParameter<float> guiDepth;
+  ofParameter<float> guiAlpha;
+  ofParameter<float> guiBallRad;
+  ofParameter<float> guiBallAttraction;
+  ofParameter<float> guiBallCollision;
+  ofParameter<float> guiRotationVelX;
+  ofParameter<float> guiRotationVelY;
   
   ofxPanel mainGui;
   void setupGUI();
   void updateGUI();
   
   // Mode & Sequence
-  int mode = 0;
+  int mode = INIT_MODE;
   int sequence = 0;
   int prevSequence = 0;
   int count = 0;
+  int keyCode = 0;
   bool modeChanged = false;
   void changeMode( int m );
-  void updateVisuals();
+  
+  void initVisuals();
   void displayVisuals( PSystemScreen screen );
+  
   void modeReady_init();
-  void modeReady_update();
   void modeReady_display( PSystemScreen screen );
+  
   void modeTouchShake_init();
-  void modeTouchShake_update();
   void modeTouchShake_display( PSystemScreen screen );
+  void modeTouchShake_getWSData( int x, int y, ofColor c );
+  
   void modeMelody_init();
-  void modeMelody_update();
   void modeMelody_display( PSystemScreen screen );
+  
   void modeSeunSori_init();
-  void modeSeunSori_update();
   void modeSeunSori_display( PSystemScreen screen );
-  void modeFinale_init();
-  void modeFinale_update();
-  void modeFinale_display( PSystemScreen screen );
+  void modeSeunSori_getWSData( int x, int y, ofColor c, int section);
+  
   void modeTest_init();
-  void modeTest_update();
   void modeTest_display( PSystemScreen screen );
   
   void modeOpening_init();
-  void modeOpening_update();
   void modeOpening_display( PSystemScreen screen );
   void modeOpening_seq1_rectNoise( PSystemScreen screen );
   void modeOpening_seq2_rectRythm( PSystemScreen screen );
@@ -106,6 +121,9 @@ public:
   void modeOpening_seq4_circleAttraction( PSystemScreen screen );
   void modeOpening_seq5_circleRepultion( PSystemScreen screen );
   void modeOpening_seq6_fireworks( PSystemScreen screen );
+  
+  void modeClosing_init();
+  void modeClosing_display( PSystemScreen screen );
   
 };
 

@@ -12,7 +12,8 @@ ParticleSystem::ParticleSystem( PSystemMode _mode, PSystemScreen _screen ) {
   mode = _mode;
   screen = _screen;
   stage = 0;
-  boundary = ofPoint(30000,30000);
+  pos = ofPoint(0,0);
+  boundary = ofPoint(30000,30000,30000);
   scale = ofRandom(0.5, 1.0);
   rotationSpeed = ofRandom(0.3, 0.8);
 }
@@ -30,34 +31,33 @@ ParticleSystem& ParticleSystem::addFireworkData( FireworkData f ) {
 }
 ParticleSystem& ParticleSystem::init() {
   switch ( mode ) {
-    case PS_MODE_NORMAL :
-      //
-      break;
     case PS_MODE_SOUND :
       sound_init();
       break;
     case PS_MODE_FIREWORK :
       firework_init();
       break;
-    case PS_MODE_TEST :
-      test_init();
+    case PS_MODE_FIREWORK_3D :
+      firework_init();
+      break;
+      break;
+    default:
       break;
   }
   return *this;
 }
 void ParticleSystem::update() {
   switch ( mode ) {
-    case PS_MODE_NORMAL :
-      //
-      break;
     case PS_MODE_SOUND :
       sound_update();
       break;
     case PS_MODE_FIREWORK :
       firework_update();
       break;
-    case PS_MODE_TEST :
-      test_update();
+    case PS_MODE_FIREWORK_3D :
+      firework_update();
+      break;
+    default:
       break;
   }
 }
@@ -70,9 +70,10 @@ void ParticleSystem::display() {
     ofRotate( ofGetFrameNum() * rotationSpeed );
     ofScale( scale, scale );
   }
-  
-  for (auto &p : particles) {
-    p.display();
+  if (mode == !PS_MODE_FIREWORK_3D) {
+    for (auto &p : particles) {
+      p.display();
+    }
   }
   
   ofPopMatrix();
@@ -86,7 +87,7 @@ void ParticleSystem::nextStage() {
 
 void ParticleSystem::applyGravity() {
   for (auto &p : particles) {
-    p.applyForce( ofPoint(0, gravity * p.mass) );
+    p.applyForce( ofPoint(0, gravity * p.mass, 0) );
   }
 }
 
@@ -104,7 +105,10 @@ void ParticleSystem::explode() {
     float randomStrength = ofRandom(8*3,15*3);
     float x = mCos(randomAngle) * randomStrength;
     float y = mSin(randomAngle) * randomStrength;
-    ofPoint force = ofPoint(x,y);
+    ofPoint force = ofPoint(x,y,0);
+    if (mode == PS_MODE_FIREWORK_3D) {
+      force = ofPoint(x,y, ofRandom(-10,10));
+    }
     p.applyForce( force );
   }
 }
@@ -118,37 +122,12 @@ void ParticleSystem::removeParticles() {
 }
 
 
-void ParticleSystem::test_init() {
-  int num = 0;
-  while( num < 100 ) {
-    particles.push_back( Particle()
-                        .position( ofPoint( ofRandom(-boundary.x/2, boundary.x/2), ofRandom(-boundary.y/2, boundary.y/2) ) )
-                        .velocity( ofPoint( ofRandom(-5,5),ofRandom(-5,5) ) )
-                        );
-    num++;
-  }
-}
-void ParticleSystem::test_update() {
-  for (auto &p : particles) {
-    for (auto &other : particles) {
-      if (&p != &other) {
-        p.applyGravitation( other, -30 );
-        //p.checkCollision( other, 0.1 );
-      }
-    }
-    //p.applyAttraction( ofPoint(0,0), 0.01 );
-    p.update();
-    p.checkBoundaries( boundary.x, boundary.y );
-  }
-}
-
 void ParticleSystem::firework_init() {
   gravity = 0.05;
-  
   for (int i=0; i<firework.number; i++) {
     particles.push_back( Particle()
-                        .position( ofPoint(0,1200) )
-                        .velocity( ofPoint( 0, -11) )
+                        .position( ofPoint(0,1200,0) )
+                        .velocity( ofPoint( 0, -11, 0) )
                         .setColor( firework.colors[i] )
                         .setScaleSineAmp(0.15)
                         );
@@ -211,8 +190,11 @@ void ParticleSystem::sound_init() {
 void ParticleSystem::sound_update() {
   if (screen == PS_SCREEN_CENTER) {
     for (auto &p : particles) {
+      p.updateLifespan();
+      p.reduceLifespan();
       p.update();
     }
+    removeParticles();
   } else {
     for (auto &p : particles) {
       ofPoint target = ofPoint( SOUND_CIRCLE_PITCH * (p.section -2), 0 );
